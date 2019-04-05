@@ -1,4 +1,6 @@
-export default function lexemOutput(table) {
+export default function lexemOutput(table, tableID, type = 'text') {
+  if (type === 'json') table = JSON.parse(table)
+
   let output = "<div class='container'>"
   output += "<table class='table'>"
   output += "<thead class='thead-dark'>"
@@ -31,6 +33,6 @@ export default function lexemOutput(table) {
   output += '</table>'
   output += '</div>'
 
-  let el = document.getElementsByClassName('lexemTableOutput')[0]
+  let el = document.getElementById(tableID)
   el.innerHTML = output
 }

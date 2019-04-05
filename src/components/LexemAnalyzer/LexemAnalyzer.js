@@ -11,9 +11,13 @@ import {
 } from '@/utils/utility'
 import Lexeme from './Lexeme'
 import { lexemDictionary } from './lexemDictionary'
-// import { getTextFromFile } from '../getTextFromFile'
 
 // ---- GLOBALS
+
+let debugMode = false
+
+// JSON result
+let lexemTableJSON = ''
 
 // counters
 let rowCount = 1,
@@ -139,9 +143,6 @@ let processLexem = function(lex) {
 
   lexemTable.push(lexeme)
 
-  // let output = isStringContainingChar(lex, '\n') ? "\\n" : lex;
-  // console.log('Lexeme: ' + output + '\n');
-
   buffer = ''
   lexCount++
   resetState()
@@ -189,7 +190,6 @@ let processDelimiter = function(c) {
   if (buffer && !isCheckingDoubleCharLex) {
     processLexem(buffer)
   }
-
   // if c is not a white delimiter
   if (!isStringContainingChar(whiteDelimiterSet, c)) {
     // if c is one of the forward check symbols
@@ -242,9 +242,6 @@ let resetState = function() {
 let lexParser = function(textFileContent) {
   for (let i = 0; i < textFileContent.length; i++) {
     let c = textFileContent.charAt(i)
-    // console.log('BUFF: \'' + buffer + '\'');
-    // console.log('C: \'' + ((c === '\n') ? '<enter>' : c) + '\'');
-
     // specific check for fixed number
     if (
       isStringContainingChar(buffer, 'E') &&
@@ -256,32 +253,28 @@ let lexParser = function(textFileContent) {
 
     if (!isStringContainingChar(delimiterSet, c)) {
       if (isAlpha(c) || c === '.' || c === 'E') {
-        // console.log('In processLetter..., c = ' + c);
         processLetter(c)
       } else if (isDigit(c) || isStringContainingChar(signSet, c)) {
-        // console.log('In processDigit..., c = ' + c);
         processDigit(c)
       }
     }
     if (isStringContainingChar(delimiterSet, c)) {
-      // console.log('In processDelimiter..., c = ' + c);
       processDelimiter(c)
     }
     if (c === DECLARATION_BLOCK_END) {
-      // console.log('-- END OF DECLARATION --')
       isDeclaring = isDeclaringLabels = false
       processLetter(c)
     }
     if (c === PROGRAM_END) {
-      // console.log('-- END OF PROGRAM --');
       processLetter(c)
     }
   }
 
+  lexemTableJSON = JSON.stringify(lexemTable, null, 2)
   alert('Lexems Processed!');
 
   // Output to console
-  if (true) {
+  if (debugMode) {
     console.log('ID Table [' + idCount + ']:\n')
     for (let i = 0; i < idCount; i++) {
       console.log(i + 1 + ' | ' + idArray[i])
@@ -304,5 +297,4 @@ let idTable = convertArrayToTable(idArray)
 let constTable = convertArrayToTable(constArray)
 let labelTable = convertArrayToTable(labelArray)
 
-// export { lexemTable, idTable, constTable, labelTable }
-export { lexParser, lexemTable }
+export { lexParser, lexemTableJSON }

@@ -1,31 +1,26 @@
 <template>
   <div class="home">
     <div class="textContainer">
-      <h1>File Load Part c:</h1>
-      <text-reader @load="text = $event"></text-reader>
+      <h1>Program Loader</h1>
+      <text-reader @load="programInput = $event"></text-reader>
       <br>
-      <textarea rows="10" v-model="text"></textarea>
+      <textarea rows="10" v-model="programInput"></textarea>
     </div>
     <div class="buttonContainer">
-      <!-- <input
-        type="button"
-        id="saveButton"
-        class="button"
-        value="Save JSON"
-        @click="lexemAnalyze"
-      >
-      <input
-        type="button"
-        id="displayButton"
-        class="button"
-        value="Display lexems"
-        @click="outputT"
-      > -->
       <button @click="lexemAnalyze" type="button" id="parseButton" class="button">Parse Program</button>
-      <button @click="outputT" type="button" id="displayButton" class="button">Display lexems</button>
-      <button @click="closeT" type="button" id="closeButton" class="button">Close lexems</button>
     </div>
-    <div class="lexemTableOutput"></div>
+    <br>
+    <div class="textContainer">
+      <h1>JSON Lexem Loader</h1>
+      <text-reader @load="lexems = $event"></text-reader>
+      <br>
+      <textarea rows="10" v-model="lexems"></textarea>
+    </div>
+    <div class="buttonContainer">
+      <button @click="outputLexemTable" type="button" id="displayButton" class="button">Display lexems</button>
+      <button @click="closeLexemTable" type="button" id="closeButton" class="button">Close lexems</button>
+    </div>
+    <div id="lexemTableOutput"></div>
   </div>
 </template>
 
@@ -33,58 +28,27 @@
 import TextReader from '@/components/TextReader.vue'
 import {
   lexParser,
-  lexemTable
+  lexemTableJSON
 } from '@/components/LexemAnalyzer/LexemAnalyzer.js'
-// import { outputTable } from '@/utils/outputTable.js'
+import outputTable from '@/utils/outputTable.js'
 
 export default {
   data() {
     return {
-      text: ''
+      programInput: '',
+      lexems: [],
     }
   },
   methods: {
     lexemAnalyze() {
-      lexParser(this.text)
+      lexParser(this.programInput)
+      this.lexems = lexemTableJSON
     },
-    outputT() {
-      let output = "<div class='container'>"
-      output += "<table class='table'>"
-      output += "<thead class='thead-dark'>"
-      output += '<tr>'
-
-      let keys = Object.keys(lexemTable[0])
-      for (let i = 0; i < keys.length; i++) {
-        output += "<th scope='col'>" + keys[i] + '</th>'
-      }
-      output += '</tr>'
-      output += '</thead>'
-      output += '<tbody>'
-
-      for (let i = 0; i < lexemTable.length; i++) {
-        output += '<tr>'
-        for (let j = 0; j < keys.length; j++) {
-          output += '<td>'
-          let value = lexemTable[i][keys[j]]
-          if (value === null || value === undefined) {
-            value = '--'
-          } else if (value === '\n') {
-            value = '\\n'
-          }
-          output += value
-          output += '</td>'
-        }
-        output += '</tr>'
-      }
-      output += '</tbody>'
-      output += '</table>'
-      output += '</div>'
-
-      let el = document.getElementsByClassName('lexemTableOutput')[0]
-      el.innerHTML = output
+    outputLexemTable() {
+      outputTable(this.lexems, 'lexemTableOutput', 'json')
     },
-    closeT() {
-      let el = document.getElementsByClassName('lexemTableOutput')[0]
+    closeLexemTable() {
+      let el = document.getElementById('lexemTableOutput')
       el.innerHTML = ''
     }
   },
@@ -129,7 +93,6 @@ textarea {
   display: flex;
   justify-content: center;
   /* flex-direction: column; */
-  margin-top: 10px;
 }
 
 /* LAB 4 stuff */

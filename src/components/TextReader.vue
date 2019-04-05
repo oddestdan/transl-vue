@@ -1,9 +1,9 @@
 <template>
   <div class="file-upload">
     <div class="file-select">
-      <div class="file-select-button" id="fileName">Choose Program</div>
-      <div class="file-select-name" id="noFile">No file chosen...</div>
-      <input type="file" name="chooseFile" id="chooseFile" @change="loadTextFromFile">
+      <div class="file-select-button" id="fileName">Choose File</div>
+      <div class="file-select-name noFile">No file chosen...</div>
+      <input type="file" name="chooseFile" class="chosenFile" @change="loadTextFromFile">
     </div>
   </div>
 </template>
@@ -19,21 +19,26 @@ export default {
       reader.readAsText(file)
 
       // Adding visual change to input
-      const chooseFile = document.getElementById('chooseFile')
-      let filename = chooseFile.value
-      if (/^\s*$/.test(filename)) {
-        document
-          .getElementsByClassName('file-upload')[0]
-          .classList.remove('active')
-        document.getElementById('noFile').innerHTML = 'No file chosen...'
-      } else {
-        document
-          .getElementsByClassName('file-upload')[0]
-          .classList.add('active')
-        document.getElementById('noFile').innerHTML = filename.replace(
-          'C:\\fakepath\\',
-          ''
-        )
+      const chosenFiles = document.getElementsByClassName('chosenFile')
+      let filenames = [];
+      
+      for (let i = 0; i < chosenFiles.length; i++) {
+        filenames[i] = chosenFiles[i].value
+
+        if (/^\s*$/.test(filenames[i])) {
+          document
+            .getElementsByClassName('file-upload')[i]
+            .classList.remove('active')
+          document.getElementsByClassName('noFile')[i].innerHTML = 'No file chosen...'
+        } else {
+          document
+            .getElementsByClassName('file-upload')[i]
+            .classList.add('active')
+          document.getElementsByClassName('noFile')[i].innerHTML = filenames[i].replace(
+            'C:\\fakepath\\',
+            ''
+          )
+        }
       }
     }
   }
