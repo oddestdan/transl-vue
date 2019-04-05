@@ -172,7 +172,8 @@ label {
 input,
 textarea {
   box-sizing: border-box;
-  border: solid 1px rgba(0, 0, 0, 0.4);
+  /* border: solid 1px rgba(0, 0, 0, 0.4); */
+  border: 2px solid rgba(0, 0, 0, 0.4) !important;
 }
 textarea {
   width: 100%;

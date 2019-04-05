@@ -7,7 +7,10 @@
       <textarea rows="10" v-model="programInput"></textarea>
     </div>
     <div class="buttonContainer">
-      <button @click="lexemAnalyze" type="button" id="parseButton" class="button">Parse Program</button>
+      <button @click="lexemAnalyze" type="button" id="parseLexButton">Parse Program</button>
+      <button @click="saveLexems" type="button" id="saveLexButton">Save Lexems As</button>
+      
+      <input type="text" id="saveFile" name="saveFile" class='save-file-title' placeholder="lexems">
     </div>
     <br>
     <div class="textContainer">
@@ -17,8 +20,8 @@
       <textarea rows="10" v-model="lexems"></textarea>
     </div>
     <div class="buttonContainer">
-      <button @click="outputLexemTable" type="button" id="displayButton" class="button">Display lexems</button>
-      <button @click="closeLexemTable" type="button" id="closeButton" class="button">Close lexems</button>
+      <button @click="outputLexemTable" type="button" id="displayLexButton">Display lexems</button>
+      <button @click="closeLexemTable" type="button" id="closeLexButton">Close lexems</button>
     </div>
     <div id="lexemTableOutput"></div>
   </div>
@@ -43,6 +46,18 @@ export default {
     lexemAnalyze() {
       lexParser(this.programInput)
       this.lexems = lexemTableJSON
+      console.log(this.lexems)
+      console.log(this.programInput)
+    },
+    saveLexems() {
+      // Download as a JSON file (WebAPI)
+      let a = document.createElement('a')
+      let file = new Blob([this.lexems], {type: 'text/plain;charset=utf-8'})
+      a.href = URL.createObjectURL(file)
+      // a.download = document.getElementById('saveFile').value
+      let val = document.getElementById('saveFile').value
+      a.download = val ? val + '.json' : 'lexems.json' 
+      a.click()
     },
     outputLexemTable() {
       outputTable(this.lexems, 'lexemTableOutput', 'json')
@@ -51,6 +66,8 @@ export default {
       let el = document.getElementById('lexemTableOutput')
       el.innerHTML = ''
     }
+  },
+  computed: {
   },
   components: {
     TextReader
@@ -66,7 +83,7 @@ textarea {
   width: 600px;
   margin: 0 auto;
 }
-.button {
+button {
   background-color: #212529;
   border: 2px solid #212529;
   /* outline: 2px solid #39b982; */
@@ -80,11 +97,11 @@ textarea {
   text-decoration: none;
   font-weight: 700;
 }
-.button:hover {
+button:hover {
   background-color: #32383e;
   border: 2px solid #32383e;
 }
-.button:active {
+button:active {
   background-color: #ffffff;
   color: #212529;
   border: 2px solid #39b982;
@@ -92,8 +109,15 @@ textarea {
 .buttonContainer {
   display: flex;
   justify-content: center;
+  align-items: center;
   /* flex-direction: column; */
 }
+.save-file-title {
+  width: 300px;
+  height: 100%;
+  padding: 15px 10px;
+}
+
 
 /* LAB 4 stuff */
 /* .tableItem:hover {
