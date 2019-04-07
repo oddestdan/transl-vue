@@ -12,7 +12,7 @@ let convertArrayToTable = function(array) {
 
 // Display a lexical error via console, alert and error
 let displayLexError = function(rowCount, message) {
-  const errorMessage = 'Error on line' + rowCount + ' : ' + message + '!\n'
+  const errorMessage = 'Lex Error on line' + rowCount + ' : ' + message + '!\n'
 
   console.log(errorMessage)
   // document.write(
@@ -25,7 +25,7 @@ let displayLexError = function(rowCount, message) {
 // Display a syntax error via console and header
 let displaySyntaxError = function(message, lexemTable, i = 0) {
   const errorMessage =
-    'Error: ' +
+    'Syntax Error: ' +
     message +
     ' | ' +
     "Lex: '" +

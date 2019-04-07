@@ -1,0 +1,13 @@
+fixed fCon
+int i, j, k
+label LABEL
+{
+    j = 42
+    for i = 1 by 2 while i <= 9 do oput >> i
+    fCon = 3.1E-1
+    iput << k
+    if k >= i then goto LABEL
+    j = 121
+    @LABEL
+    oput >> k >> j
+}

@@ -2,6 +2,11 @@
   <div class="home">
     <div class="textContainer">
       <h1>Program Loader</h1>
+    <hr />
+      <div class="buttonContainer">
+        <button @click="resetAll" type="button" id="resetAllButton">Reset</button>
+      </div>
+
       <text-reader @load="programInput = $event"></text-reader>
       <br>
       <textarea rows="10" v-model="programInput"></textarea>
@@ -9,21 +14,36 @@
     <div class="buttonContainer">
       <button @click="lexemAnalyze" type="button" id="parseLexButton">Parse Program</button>
       <button @click="saveLexems" type="button" id="saveLexButton">Save Lexems As</button>
-      
-      <input type="text" id="saveFile" name="saveFile" class='save-file-title' placeholder="lexems">
+      <input type="text" id="saveFile" name="saveFile" class="save-file-title" placeholder="lexems">
     </div>
-    <br>
+    <hr />
     <div class="textContainer">
       <h1>JSON Lexem Loader</h1>
       <text-reader @load="lexems = $event"></text-reader>
       <br>
       <textarea rows="10" v-model="lexems"></textarea>
     </div>
+    <hr />
     <div class="buttonContainer">
       <button @click="outputLexemTable" type="button" id="displayLexButton">Display lexems</button>
       <button @click="closeLexemTable" type="button" id="closeLexButton">Close lexems</button>
     </div>
+    <hr />
+    <div class="buttonContainer">
+      <button @click="parseSARecursive" type="button" id="parseSARecursiveButton">Recursive Parse</button>
+    </div>
+    <hr />
+    <div class="buttonContainer">
+      <button @click="parseMPA" type="button" id="parseMPAButton">MPA Parse</button>
+      <button @click="outputStateTable" type="button" id="displayStateButton">Display states</button>
+      <button @click="closeStateTable" type="button" id="closeStateButton">Close states</button>
+    </div>
+    <hr />
+    <div class="buttonContainer">
+      <!-- <button @click="parseUprising" type="button" id="parseUprisingButton">Uprising Parse</button> -->
+    </div>
     <div id="lexemTableOutput"></div>
+    <div id="stateTableOutput"></div>
   </div>
 </template>
 
@@ -33,30 +53,40 @@ import {
   lexParser,
   lexemTableJSON
 } from '@/components/LexemAnalyzer/LexemAnalyzer.js'
+import { parserRecursive } from '@/components/SyntaxAnalyzer/Recursive/SARecursive.js'
+import {
+  parserMPA,
+  stateTable
+} from '@/components/SyntaxAnalyzer/MPA/SAMPA.js'
 import outputTable from '@/utils/outputTable.js'
 
 export default {
   data() {
     return {
       programInput: '',
-      lexems: [],
+      lexems: []
     }
   },
   methods: {
+    resetAll() {
+      this.programInput = ''
+      this.lexems = []
+      alert('Everything has been reset')
+    },
     lexemAnalyze() {
       lexParser(this.programInput)
       this.lexems = lexemTableJSON
+
       console.log(this.lexems)
-      console.log(this.programInput)
+      // console.log(this.programInput)
     },
     saveLexems() {
       // Download as a JSON file (WebAPI)
       let a = document.createElement('a')
-      let file = new Blob([this.lexems], {type: 'text/plain;charset=utf-8'})
+      const file = new Blob([this.lexems], { type: 'text/plain;charset=utf-8' })
       a.href = URL.createObjectURL(file)
-      // a.download = document.getElementById('saveFile').value
-      let val = document.getElementById('saveFile').value
-      a.download = val ? val + '.json' : 'lexems.json' 
+      const val = document.getElementById('saveFile').value
+      a.download = val ? val + '.json' : 'lexems.json'
       a.click()
     },
     outputLexemTable() {
@@ -65,10 +95,24 @@ export default {
     closeLexemTable() {
       let el = document.getElementById('lexemTableOutput')
       el.innerHTML = ''
+    },
+
+    parseSARecursive() {
+      parserRecursive(this.lexems)
+    },
+
+    parseMPA() {
+      parserMPA(this.lexems)
+    },
+    outputStateTable() {
+      outputTable(stateTable, 'stateTableOutput')
+    },
+    closeStateTable() {
+      let el = document.getElementById('stateTableOutput')
+      el.innerHTML = ''
     }
   },
-  computed: {
-  },
+  computed: {},
   components: {
     TextReader
   }
@@ -79,6 +123,17 @@ export default {
 textarea {
   resize: none;
 }
+/* Line Numbering Fix */
+textarea{
+  background: url(http://i.imgur.com/2cOaJ.png);
+  background-attachment: local;
+  background-repeat: no-repeat;
+  padding-left: 35px;
+  padding-top: 10px;
+  border-color:#ccc;
+  font: 14px 'Open-Sans', sans-serif;
+}
+
 .textContainer {
   width: 600px;
   margin: 0 auto;
@@ -96,6 +151,10 @@ button {
   margin: 20px;
   text-decoration: none;
   font-weight: 700;
+}
+#resetAllButton {
+  background-color: orangered;
+  border: 2px solid transparent;
 }
 button:hover {
   background-color: #32383e;
@@ -117,7 +176,6 @@ button:active {
   height: 100%;
   padding: 15px 10px;
 }
-
 
 /* LAB 4 stuff */
 /* .tableItem:hover {
