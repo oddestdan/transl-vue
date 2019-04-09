@@ -2,6 +2,7 @@
   <div id="nav" class="nav">
     <router-link to="/" class="brand">Translator Vue</router-link>
     <nav>
+      <router-link :to="{ name: 'rel-table' }">Relations</router-link> |
       <router-link :to="{ name: 'home' }">Home</router-link>
     </nav>
   </div>

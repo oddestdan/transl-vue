@@ -2,7 +2,7 @@
   <div class="home">
     <div class="textContainer">
       <h1>Program Loader</h1>
-    <hr />
+      <hr>
       <div class="buttonContainer">
         <button @click="resetAll" type="button" id="resetAllButton">Reset</button>
       </div>
@@ -16,34 +16,40 @@
       <button @click="saveLexems" type="button" id="saveLexButton">Save Lexems As</button>
       <input type="text" id="saveFile" name="saveFile" class="save-file-title" placeholder="lexems">
     </div>
-    <hr />
+    <hr>
     <div class="textContainer">
       <h1>JSON Lexem Loader</h1>
       <text-reader @load="lexems = $event"></text-reader>
       <br>
       <textarea rows="10" v-model="lexems"></textarea>
     </div>
-    <hr />
+    <hr>
     <div class="buttonContainer">
       <button @click="outputLexemTable" type="button" id="displayLexButton">Display lexems</button>
       <button @click="closeLexemTable" type="button" id="closeLexButton">Close lexems</button>
     </div>
-    <hr />
+    <hr>
     <div class="buttonContainer">
       <button @click="parseSARecursive" type="button" id="parseSARecursiveButton">Recursive Parse</button>
     </div>
-    <hr />
+    <hr>
     <div class="buttonContainer">
       <button @click="parseMPA" type="button" id="parseMPAButton">MPA Parse</button>
       <button @click="outputStateTable" type="button" id="displayStateButton">Display states</button>
       <button @click="closeStateTable" type="button" id="closeStateButton">Close states</button>
     </div>
-    <hr />
+    <hr>
+    <div class="buttonContainer">
+      <button @click="setRelations" type="button" id="setRelationsButton">Set relations</button>
+      <!-- <button @click="openInNewTab('rel-table')" type="button">clicky thingy</button> -->
+    </div>
+    <hr>
     <div class="buttonContainer">
       <!-- <button @click="parseUprising" type="button" id="parseUprisingButton">Uprising Parse</button> -->
     </div>
     <div id="lexemTableOutput"></div>
     <div id="stateTableOutput"></div>
+    <div id="relationTableOutput"></div>
   </div>
 </template>
 
@@ -54,17 +60,19 @@ import {
   lexemTableJSON
 } from '@/components/LexemAnalyzer/LexemAnalyzer.js'
 import { parserRecursive } from '@/components/SyntaxAnalyzer/Recursive/SARecursive.js'
-import {
-  parserMPA,
-  stateTable
-} from '@/components/SyntaxAnalyzer/MPA/SAMPA.js'
+import { parserMPA, stateTable } from '@/components/SyntaxAnalyzer/MPA/SAMPA.js'
 import outputTable from '@/utils/outputTable.js'
+import relations from '@/components/SyntaxAnalyzer/Uprising/relations.js'
+import outputUprisingTable from '@/utils/outputUprisingTable.js'
+import { setTimeout } from 'timers';
 
 export default {
   data() {
     return {
       programInput: '',
-      lexems: []
+      lexems: [],
+      relationTable: [],
+      rules: []
     }
   },
   methods: {
@@ -76,9 +84,6 @@ export default {
     lexemAnalyze() {
       lexParser(this.programInput)
       this.lexems = lexemTableJSON
-
-      console.log(this.lexems)
-      // console.log(this.programInput)
     },
     saveLexems() {
       // Download as a JSON file (WebAPI)
@@ -110,7 +115,22 @@ export default {
     closeStateTable() {
       let el = document.getElementById('stateTableOutput')
       el.innerHTML = ''
-    }
+    },
+
+    setRelations() {
+      this.relationTable = relations(this.rules)
+      console.log('Relation table:\n' + this.relationTable)
+      console.log('Rules:\n' + this.rules)
+
+      outputUprisingTable(this.relationTable, this.rules, 'relationTableOutput')
+
+      // let win = window.open('rel', '_blank')
+      // win.focus()
+    },
+    // openInNewTab(url) {
+    //   let win = window.open(url, '_blank')
+    //   win.focus()
+    // }
   },
   computed: {},
   components: {
@@ -124,19 +144,14 @@ textarea {
   resize: none;
 }
 /* Line Numbering Fix */
-textarea{
+textarea {
   background: url(http://i.imgur.com/2cOaJ.png);
   background-attachment: local;
   background-repeat: no-repeat;
   padding-left: 35px;
   padding-top: 10px;
-  border-color:#ccc;
+  border-color: #ccc;
   font: 14px 'Open-Sans', sans-serif;
-}
-
-.textContainer {
-  width: 600px;
-  margin: 0 auto;
 }
 button {
   background-color: #212529;

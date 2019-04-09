@@ -64,7 +64,7 @@ let delimiterSet = '+-<>=!*/()@:\n\t, ',
 // param: lex - string buffer
 let processLexem = function(lex) {
   if (!lex) {
-    displayLexError(rowCount, 'Undefined empty lexem')
+    displayLexError('Undefined empty lexem', rowCount)
   }
 
   let lexeme = new Lexeme()
@@ -106,7 +106,7 @@ let processLexem = function(lex) {
     if (isDeclaring) {
       // declaration part
       if (idCode !== -1 || labelCode !== -1) {
-        displayLexError(rowCount, "Duplicate declaration '" + lex + "'")
+        displayLexError("Duplicate declaration '" + lex + "'", rowCount)
       } else if (!isDeclaringLabels) {
         // Id
         idCount++
@@ -126,7 +126,7 @@ let processLexem = function(lex) {
     } else {
       // operation part
       if (idCode === -1 && labelCode === -1) {
-        displayLexError(rowCount, "Unknown identifier '" + lex + "'")
+        displayLexError("Unknown identifier '" + lex + "'", rowCount)
       } else if (labelCode === -1) {
         // Id
         lexeme.idCode = idCode + 1
@@ -153,8 +153,8 @@ let processLexem = function(lex) {
 let processLetter = function(c) {
   if (isStringContainingChar(buffer, '.') && c === '.') {
     displayLexError(
-      rowCount,
-      'Incorrectly formed number (const | const. | const.const | floatE{+-}const )'
+      'Incorrectly formed number (const | const. | const.const | floatE{+-}const )',
+      rowCount
     )
   }
 
@@ -162,7 +162,7 @@ let processLetter = function(c) {
     processLexem(buffer)
     isCheckingDoubleCharLex = false
   } else if (isCheckingConst && !isStringContainingChar(constSymbolSet, c)) {
-    displayLexError(rowCount, 'Identificator must start with a letter')
+    displayLexError('Identificator must start with a letter', rowCount)
   } else {
     isCheckingId = true
     buffer += c
@@ -271,7 +271,7 @@ let lexParser = function(textFileContent) {
   }
 
   lexemTableJSON = JSON.stringify(lexemTable, null, 2)
-  alert('Lexems Processed!');
+  alert('Lexems Processed!')
 
   // Output to console
   if (debugMode) {

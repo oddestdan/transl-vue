@@ -11,7 +11,7 @@ let convertArrayToTable = function(array) {
 }
 
 // Display a lexical error via console, alert and error
-let displayLexError = function(rowCount, message) {
+let displayLexError = function(message, rowCount = 0) {
   const errorMessage = 'Lex Error on line' + rowCount + ' : ' + message + '!\n'
 
   console.log(errorMessage)

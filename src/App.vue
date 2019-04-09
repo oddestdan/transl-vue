@@ -244,4 +244,8 @@ select:focus::ms-value {
 select::ms-expand {
   opacity: 0;
 }
+.textContainer {
+  width: 600px;
+  margin: 0 auto;
+}
 </style>
