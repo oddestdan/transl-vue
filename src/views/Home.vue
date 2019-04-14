@@ -1,42 +1,58 @@
 <template>
-  <div class="home">
+  <div class="home centerContainer">
+
+    <!-- Reset Button -->
+    <div class="resetButtonContainer"><button @click="resetAll" type="button" id="resetAllButton">Reset</button></div>
+
     <div class="textContainer">
       <h1>Program Loader</h1>
       <hr>
-      <div class="buttonContainer">
-        <button @click="resetAll" type="button" id="resetAllButton">Reset</button>
-      </div>
 
       <text-reader @load="programInput = $event"></text-reader>
       <br>
       <textarea rows="10" v-model="programInput"></textarea>
     </div>
+
     <div class="buttonContainer">
       <button @click="lexemAnalyze" type="button" id="parseLexButton">Parse Program</button>
       <button @click="saveLexems" type="button" id="saveLexButton">Save Lexems As</button>
       <input type="text" id="saveFile" name="saveFile" class="save-file-title" placeholder="lexems">
     </div>
     <hr>
-    <div class="textContainer">
-      <h1>JSON Lexem Loader</h1>
-      <text-reader @load="lexems = $event"></text-reader>
-      <br>
-      <textarea rows="10" v-model="lexems"></textarea>
+
+    <div class="splitter">
+     
+      <div class="centerContainer">
+        <h1>Syntax Parser</h1>
+
+        <!-- <v-select v-model="selected" :options="options"></v-select> -->
+
+        <select
+        name="parserSelect"
+        id="parserSelect"
+        v-model="selectedParser"
+        >
+          <option value="Recursive">Recursive</option>
+          <option value="MPA">MPA</option>
+          <option value="Uprising">Uprising</option>
+        </select>
+        <button @click="parse" type="button" id="displayLexButton">{{ selectedParser }}</button>
+      </div>
+
+      <div class="textContainer">
+        <h1>JSON Lexem Loader</h1>
+        <text-reader @load="lexems = $event"></text-reader>
+        <br>
+        <textarea rows="10" v-model="lexems"></textarea>
+      </div>
+    
     </div>
+
     <hr>
+
     <div class="buttonContainer">
       <button @click="outputLexemTable" type="button" id="displayLexButton">Display lexems</button>
       <button @click="closeLexemTable" type="button" id="closeLexButton">Close lexems</button>
-    </div>
-    <hr>
-    <div class="buttonContainer">
-      <button @click="parseSARecursive" type="button" id="parseSARecursiveButton">Recursive Parse</button>
-    </div>
-    <hr>
-    <div class="buttonContainer">
-      <button @click="parseMPA" type="button" id="parseMPAButton">MPA Parse</button>
-      <button @click="outputStateTable" type="button" id="displayStateButton">Display states</button>
-      <button @click="closeStateTable" type="button" id="closeStateButton">Close states</button>
     </div>
     <hr>
     <div class="buttonContainer">
@@ -72,18 +88,24 @@ export default {
       programInput: '',
       lexems: [],
       relationTable: [],
-      rules: []
+      rules: [],
+      
+      selectedParser: 'Recursive'
     }
   },
   methods: {
     resetAll() {
       this.programInput = ''
       this.lexems = []
+      console.log('PI:\n' + this.programInput)
+      console.log('Lex:\n' + this.lexems)
       alert('Everything has been reset')
     },
     lexemAnalyze() {
+      this.lexems = [] // reset
       lexParser(this.programInput)
       this.lexems = lexemTableJSON
+      console.log('Lex:\n' + this.lexems)
     },
     saveLexems() {
       // Download as a JSON file (WebAPI)
@@ -102,20 +124,39 @@ export default {
       el.innerHTML = ''
     },
 
-    parseSARecursive() {
-      parserRecursive(this.lexems)
+    parse() {
+      switch (this.selectedParser) {
+        case 'Recursive':
+          parserRecursive(this.lexems)
+          break
+        case 'MPA':
+          parserMPA(this.lexems)
+          window.open('state', '_blank').focus()
+          break
+        case 'Uprising':
+          parserRecursive(this.lexems)
+          break
+      
+        default:
+          parserRecursive(this.lexems)
+          break
+      }
     },
 
-    parseMPA() {
-      parserMPA(this.lexems)
-    },
-    outputStateTable() {
-      outputTable(stateTable, 'stateTableOutput')
-    },
-    closeStateTable() {
-      let el = document.getElementById('stateTableOutput')
-      el.innerHTML = ''
-    },
+    // parseSARecursive() {
+    //   parserRecursive(this.lexems)
+    // },
+
+    // parseMPA() {
+    //   parserMPA(this.lexems)
+    // },
+    // outputStateTable() {
+    //   outputTable(stateTable, 'stateTableOutput')
+    // },
+    // closeStateTable() {
+    //   let el = document.getElementById('stateTableOutput')
+    //   el.innerHTML = ''
+    // },
 
     setRelations() {
       this.relationTable = relations(this.rules)
@@ -140,6 +181,13 @@ export default {
 </script>
 
 <style scoped>
+.splitter {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  width: 100%;
+}
+
 textarea {
   resize: none;
 }

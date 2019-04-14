@@ -62,7 +62,7 @@ h6 {
   font-family: 'Montserrat', sans-serif;
 }
 h1 {
-  font-size: 50px !important;
+  font-size: 46px !important;
   font-weight: 700 !important;
 }
 h2 {
@@ -145,6 +145,9 @@ input {
 button,
 select {
   text-transform: none;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: bold;
+  /* font-size: 14px; */
 }
 button,
 [type='button'],
@@ -227,11 +230,14 @@ select {
     url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3E%3C/svg%3E")
     no-repeat right 12px center;
   background-size: 8px 10px;
-  border: solid 1px rgba(0, 0, 0, 0.4);
+  border: 2px solid #dce4ec;
   border-radius: 0;
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+}
+select:hover {
+  border-color: #34495e;
 }
 select:focus {
   border-color: #39b982;
@@ -245,7 +251,17 @@ select::ms-expand {
   opacity: 0;
 }
 .textContainer {
-  width: 600px;
-  margin: 0 auto;
+  /* width: 60%; */
+  width: 500px;
+}
+.centerContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.resetButtonContainer {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
 }
 </style>

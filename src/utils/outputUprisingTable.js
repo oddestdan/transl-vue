@@ -1,5 +1,5 @@
 export default function outputUprisingTable(tab, rulesArray, tableID) {
-  let output = "<div class='container-fluid'>"
+  let output = "<div class='container-fluid' style='font-size: 8px'>"
   output += "<table class='table table-sm table-bordered table-hover'>"
   output += "<thead class='thead-dark'>"
   output += '<tr>'
