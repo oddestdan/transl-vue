@@ -126,6 +126,10 @@ small {
   background: linear-gradient(to right, #16c0b0, #84cf6a);
   color: #fff;
 }
+hr,
+br {
+  width: 100%;
+}
 button,
 label,
 input,
@@ -226,15 +230,22 @@ select {
   height: 52px;
   padding: 0 24px 0 10px;
   vertical-align: middle;
+  color: #34495e;
   background: #fff
     url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3E%3C/svg%3E")
     no-repeat right 12px center;
   background-size: 8px 10px;
   border: 2px solid #dce4ec;
   border-radius: 0;
+
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+
+  transition: all 0.2s ease-in-out;
+  -moz-transition: all 0.2s ease-in-out;
+  -webkit-transition: all 0.2s ease-in-out;
+  -o-transition: all 0.2s ease-in-out;
 }
 select:hover {
   border-color: #34495e;
@@ -253,11 +264,17 @@ select::ms-expand {
 .textContainer {
   /* width: 60%; */
   width: 500px;
+  /* margin: 0 auto; */
 }
-.centerContainer {
+.centerColContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+.centerRowContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 }
 .resetButtonContainer {
   position: fixed;

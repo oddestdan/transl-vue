@@ -1,7 +1,17 @@
-export default function lexemOutput(table, tableID, type = 'text') {
+export default function lexemOutput(
+  table,
+  tableID,
+  type = 'text',
+  smaller = false
+) {
   if (type === 'json') table = JSON.parse(table)
 
-  let output = "<div class='container'>"
+  let output = ''
+
+  smaller
+    ? (output += "<div class='container' style='font-size: 10px'>")
+    : (output += "<div class='container'>")
+
   output += "<table class='table'>"
   output += "<thead class='thead-dark'>"
   output += '<tr>'

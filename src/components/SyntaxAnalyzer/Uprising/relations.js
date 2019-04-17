@@ -7,8 +7,8 @@ const N = 8
 
 export default function relations(rules) {
   try {
-    rulesArray = rules;
-    return setRelations()
+    rulesArray = rules
+    return [setRelations(), rulesArray]
     // outputUprisingTable(relationTable, rulesArray, 'relationTableOutput')
   } catch (error) {
     throw new Error('Relations error\n' + error)
@@ -132,7 +132,8 @@ let setRelations = function() {
     }
   }
 
-  console.log('Relations successful')
+  console.log('Relations were set successfully')
+  alert('Relations were set successfully')
   return uprisingTable
 }
 

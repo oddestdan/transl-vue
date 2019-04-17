@@ -1,16 +1,17 @@
 <template>
-  <div class="home centerContainer">
-
+  <div class="home">
     <!-- Reset Button -->
     <div class="resetButtonContainer"><button @click="resetAll" type="button" id="resetAllButton">Reset</button></div>
 
-    <div class="textContainer">
-      <h1>Program Loader</h1>
-      <hr>
+    <div class="centerColContainer">
+      <div class="textContainer">
+        <h1>Program Loader</h1>
+        <hr>
 
-      <text-reader @load="programInput = $event"></text-reader>
-      <br>
-      <textarea rows="10" v-model="programInput"></textarea>
+        <text-reader @load="programInput = $event"></text-reader>
+        <br>
+        <textarea rows="10" v-model="programInput"></textarea>
+      </div>
     </div>
 
     <div class="buttonContainer">
@@ -20,13 +21,9 @@
     </div>
     <hr>
 
-    <div class="splitter">
-     
-      <div class="centerContainer">
+    <div class="splitter centerRowContainer">
+      <div class="centerColContainer">
         <h1>Syntax Parser</h1>
-
-        <!-- <v-select v-model="selected" :options="options"></v-select> -->
-
         <select
         name="parserSelect"
         id="parserSelect"
@@ -45,27 +42,19 @@
         <br>
         <textarea rows="10" v-model="lexems"></textarea>
       </div>
-    
     </div>
-
-    <hr>
 
     <div class="buttonContainer">
       <button @click="outputLexemTable" type="button" id="displayLexButton">Display lexems</button>
       <button @click="closeLexemTable" type="button" id="closeLexButton">Close lexems</button>
     </div>
-    <hr>
     <div class="buttonContainer">
       <button @click="setRelations" type="button" id="setRelationsButton">Set relations</button>
-      <!-- <button @click="openInNewTab('rel-table')" type="button">clicky thingy</button> -->
-    </div>
-    <hr>
-    <div class="buttonContainer">
-      <!-- <button @click="parseUprising" type="button" id="parseUprisingButton">Uprising Parse</button> -->
     </div>
     <div id="lexemTableOutput"></div>
     <div id="stateTableOutput"></div>
     <div id="relationTableOutput"></div>
+    <div id="syntaxTableOutput"></div>
   </div>
 </template>
 
@@ -80,7 +69,7 @@ import { parserMPA, stateTable } from '@/components/SyntaxAnalyzer/MPA/SAMPA.js'
 import outputTable from '@/utils/outputTable.js'
 import relations from '@/components/SyntaxAnalyzer/Uprising/relations.js'
 import outputUprisingTable from '@/utils/outputUprisingTable.js'
-import { setTimeout } from 'timers';
+import parserUprising from '@/components/SyntaxAnalyzer/Uprising/SAUprising.js'
 
 export default {
   data() {
@@ -130,48 +119,30 @@ export default {
           parserRecursive(this.lexems)
           break
         case 'MPA':
-          parserMPA(this.lexems)
-          window.open('state', '_blank').focus()
+          if (parserMPA(this.lexems)) {
+            window.open('state', '_blank').focus()
+          }
           break
         case 'Uprising':
-          parserRecursive(this.lexems)
+          // temporary
+          [this.relationTable, this.rules] = relations(this.rules)
+          // outputUprisingTable(this.relationTable, this.rules, 'relationTableOutput')
+
+          let syntaxTable = parserUprising(this.lexems, this.relationTable, this.rules)
+          outputTable(syntaxTable, 'syntaxTableOutput', 'text', true)
           break
-      
         default:
           parserRecursive(this.lexems)
           break
       }
     },
 
-    // parseSARecursive() {
-    //   parserRecursive(this.lexems)
-    // },
-
-    // parseMPA() {
-    //   parserMPA(this.lexems)
-    // },
-    // outputStateTable() {
-    //   outputTable(stateTable, 'stateTableOutput')
-    // },
-    // closeStateTable() {
-    //   let el = document.getElementById('stateTableOutput')
-    //   el.innerHTML = ''
-    // },
-
     setRelations() {
-      this.relationTable = relations(this.rules)
-      console.log('Relation table:\n' + this.relationTable)
-      console.log('Rules:\n' + this.rules)
-
-      outputUprisingTable(this.relationTable, this.rules, 'relationTableOutput')
-
+      [this.relationTable, this.rules] = relations(this.rules)
+      // outputUprisingTable(this.relationTable, this.rules, 'relationTableOutput')
       // let win = window.open('rel', '_blank')
       // win.focus()
     },
-    // openInNewTab(url) {
-    //   let win = window.open(url, '_blank')
-    //   win.focus()
-    // }
   },
   computed: {},
   components: {
@@ -194,6 +165,7 @@ textarea {
 /* Line Numbering Fix */
 textarea {
   background: url(http://i.imgur.com/2cOaJ.png);
+  background: url('../assets/rows.png');
   background-attachment: local;
   background-repeat: no-repeat;
   padding-left: 35px;
