@@ -277,6 +277,7 @@ select::ms-expand {
   justify-content: center;
 }
 .resetButtonContainer {
+  z-index: 10;
   position: fixed;
   bottom: 20px;
   right: 20px;

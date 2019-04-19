@@ -32,6 +32,7 @@
           <option value="Recursive">Recursive</option>
           <option value="MPA">MPA</option>
           <option value="Uprising">Uprising</option>
+          <option value="Poliz">Poliz</option>
         </select>
         <button @click="parse" type="button" id="displayLexButton">{{ selectedParser }}</button>
       </div>
@@ -70,6 +71,7 @@ import outputTable from '@/utils/outputTable.js'
 import relations from '@/components/SyntaxAnalyzer/Uprising/relations.js'
 import outputUprisingTable from '@/utils/outputUprisingTable.js'
 import parserUprising from '@/components/SyntaxAnalyzer/Uprising/SAUprising.js'
+import parserPoliz from '@/components/SyntaxAnalyzer/Uprising/SAPoliz.js'
 
 export default {
   data() {
@@ -88,6 +90,10 @@ export default {
       this.lexems = []
       console.log('PI:\n' + this.programInput)
       console.log('Lex:\n' + this.lexems)
+
+      // remove all text from all textareas
+      // remember to select and iteratore over all of them
+      
       alert('Everything has been reset')
     },
     lexemAnalyze() {
@@ -125,11 +131,19 @@ export default {
           break
         case 'Uprising':
           // temporary
-          [this.relationTable, this.rules] = relations(this.rules)
+          [this.relationTable, this.rules] = relations(this.rules) // will need to be executed on mount | created ?
           // outputUprisingTable(this.relationTable, this.rules, 'relationTableOutput')
 
-          let syntaxTable = parserUprising(this.lexems, this.relationTable, this.rules)
-          outputTable(syntaxTable, 'syntaxTableOutput', 'text', true)
+          let syntaxTable1 = parserUprising(this.lexems, this.relationTable, this.rules)
+          outputTable(syntaxTable1, 'syntaxTableOutput', 'text', true)
+          break
+        case 'Poliz':
+          // temporary
+          [this.relationTable, this.rules] = relations(this.rules) // will need to be executed on mount | created ?
+          // outputUprisingTable(this.relationTable, this.rules, 'relationTableOutput')
+
+          let syntaxTable2 = parserPoliz(this.lexems, this.relationTable, this.rules)
+          outputTable(syntaxTable2, 'syntaxTableOutput', 'text', true)
           break
         default:
           parserRecursive(this.lexems)

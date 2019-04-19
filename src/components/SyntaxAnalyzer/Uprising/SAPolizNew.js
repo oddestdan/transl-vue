@@ -4,6 +4,46 @@ import { grammar } from './grammar'
 
 let rulesArray = []
 let lexemTable = []
+// let ruleVarList = {} // needed ???
+
+let getPoliz = function(basis, rule, returnValue, flag = false) {
+  basis = basis.join(' ')
+  console.log(basis + ' | ' + rule)
+  if (basis === 'expression + T1' && rule === 'expression') return '+'
+  else if (basis === 'expression - T1' && rule === 'expression') return '-'
+  else if (basis === '- T1' && rule === 'expression') return '@'
+  else if (basis === 'T * F' && rule === 'T') return '*'
+  else if (basis === 'T / F' && rule === 'T') return '/'
+  else if (basis === 'IDN' && rule === 'F') return returnValue
+  else if (basis === 'CON' && rule === 'F') return returnValue
+  else return ''
+}
+
+let countPoliz = function(poliz) {
+  let stackPoliz = []
+  let tmp
+
+  while (poliz) {
+    if (poliz[0].match(/^[0-9]\d*(\.\d+)?$/))
+      stackPoliz.push(poliz.splice(-1, 1))
+    else if (poliz[0].indexOf(['+', '-', '*', '/'] !== -1)) {
+      if (poliz[0] === '+') tmp = stackPoliz[-2] + stackPoliz[-1]
+      else if (poliz[0] === '-') tmp = stackPoliz[-2] - stackPoliz[-1]
+      else if (poliz[0] === '*') tmp = stackPoliz[-2] * stackPoliz[-1]
+      else tmp = stackPoliz[-2] / stackPoliz[-1]
+      stackPoliz.splice(stackPoliz.length - 2)
+      stackPoliz.push(tmp)
+      poliz.shift()
+    } else if (poliz[0] === '@') {
+      tmp = stackPoliz[stackPoliz.length - 1] * -1
+      stackPoliz.splice(-1, 1)
+      stackPoliz.push(tmp)
+      poliz.shift()
+    }
+  }
+
+  console.log('Expression = ' + stackPoliz[0])
+}
 
 export default function parserUprising(lexems, uprisingRelationTable, rules) {
   lexemTable = JSON.parse(lexems)
@@ -19,6 +59,8 @@ export default function parserUprising(lexems, uprisingRelationTable, rules) {
     // ruleVarList = grammar[obj] // needed ???
 
     let syntaxTable = parser(uprisingRelationTable, rulesArray)
+    console.log('syntaxTable:')
+    console.log(syntaxTable)
 
     alert('Uprising SA successful')
     return syntaxTable
@@ -168,6 +210,9 @@ let parser = function(uprisingRelationTable, rulesArray) {
       break
     }
   }
+
+  // for (let obj in grammar)
+  //     if (grammar[obj].title = "variable_list") grammar[obj] = ruleVarList;
 
   return syntaxTable
 }
