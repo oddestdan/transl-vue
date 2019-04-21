@@ -2,13 +2,13 @@ export default function lexemOutput(
   table,
   tableID,
   type = 'text',
-  smaller = false
+  isSmaller = false
 ) {
   if (type === 'json') table = JSON.parse(table)
 
   let output = ''
 
-  smaller
+  isSmaller
     ? (output += "<div class='container' style='font-size: 10px'>")
     : (output += "<div class='container'>")
 

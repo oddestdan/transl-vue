@@ -25,28 +25,30 @@ export default function parserUprising(lexems, uprisingRelationTable, rules) {
 }
 
 let parser = function(uprisingRelationTable, rulesArray) {
-  let fullPoliz = []
-
-
   // Preparation
   let counter = -1
-  let lexemDicReversed = {}
-  let mainRelation
-  Object.keys(lexemDictionary).forEach(
-    key => (lexemDicReversed[lexemDictionary[key]] = key)
-  )
 
-  let programInput = [], // row of program words (lexem titles)
-    pureTokens = [] // title equivalents of codes
+  let mainRelation = '' // main relation sign
+
+  let lexemDicReversed = {}
+  Object.keys(lexemDictionary).forEach(key => (lexemDicReversed[lexemDictionary[key]] = key))
+
+  let programInput = [], // RHS row of program words (lexem titles)
+    pureTokens = [], // title equivalents of codes
+    stack = [], // LHS stack
+    fullPoliz = [], // formed poliz
+    syntaxTable = [] // output step-by-step table
+
   for (let lex in lexemTable) {
-    programInput[lex] = lexemTable[lex].title
-    if (programInput[lex] === '\n') programInput[lex] = '\\n'
     pureTokens[lex] = lexemDicReversed[lexemTable[lex].code]
+
+    programInput[lex] = lexemTable[lex].title
+    if (programInput[lex] === '\n') programInput[lex] = '\\n' // special case for \n
   }
+  
   programInput.push('#')
   pureTokens.push('#')
-  let stack = ['#']
-  let syntaxTable = []
+  stack.push = '#'
 
   // converting \n to actual \n (in a form of \\n)
   for (let token in pureTokens) {
@@ -59,7 +61,7 @@ let parser = function(uprisingRelationTable, rulesArray) {
     if (stack[stack.length - 1] === '{') counter++
     if (stack[stack.length - 1] === '#') {
       mainRelation = '<'
-      syntaxTable.push([stack.join(' '), mainRelation, programInput.join(' ')])
+      syntaxTable.push([stack.join(' '), mainRelation, programInput.join(' '), ''])
     } else if (pureTokens[0] === '#') {
       mainRelation = '>'
     } else {
@@ -69,7 +71,7 @@ let parser = function(uprisingRelationTable, rulesArray) {
     }
 
     if (stack[stack.length - 1] !== '#') {
-      syntaxTable.push([stack.join(' '), mainRelation, programInput.join(' ')])
+      syntaxTable.push([stack.join(' '), mainRelation, programInput.join(' '), ''])
     }
 
     let checkHelper = false
@@ -86,23 +88,39 @@ let parser = function(uprisingRelationTable, rulesArray) {
 
       stack.push(pureTokens.shift())
       programInput.shift()
-    } else if (mainRelation === '>') {
+    }
+
+    // ---------------------------------------------
+    // ---------------------------------------------
+    // ---------------------------------------------
+    
+    else if (mainRelation === '>') {
       let base = []
       let i = 0
       let ruleVariant = ''
 
-      if (
-        counter < 0 &&
-        stack[stack.length - 1] === 'IDN' &&
-        stack[stack.length - 2] === ','
-      ) {
-        stack.splice(stack.length - 3, 3)
-        stack.push('variable_list')
-      } else if (counter < 0 && stack[stack.length - 1] === 'IDN') {
-        stack.splice(stack.length - 1, 1)
-        stack.push('variable_list')
+      // if ( counter < 0 && stack[stack.length - 1] === 'IDN' && stack[stack.length - 2] === ',') {
+      //   // stack.splice(stack.length - 3, 3)
+      //   // stack.push('variable_list')
+      //   stack.splice(stack.length - 3, 3, 'variable_list')
+      // } else if (counter < 0 && stack[stack.length - 1] === 'IDN') {
+      //   // stack.splice(stack.length - 1, 1)
+      //   // stack.push('variable_list')
+      //   stack.splice(stack.length - 1, 1, 'variable_list')
+      // }
+      
+      // wrap up declaration unit(s)
+      if ( counter < 0 && stack[stack.length - 1] === 'IDN') {
+        // stack[stack.length - 2] === ','
+        // ? stack.splice(stack.length - 3, 3, 'variable_list')
+        // : stack.splice(stack.length - 1, 1, 'variable_list')
+        if (stack[stack.length - 2] === ',') {
+          stack.splice(stack.length - 3, 3, 'variable_list')
+        } else {
+          stack.splice(stack.length - 1, 1, 'variable_list')
+        }
       } else {
-        // selecting the base from stack
+        // select base from stack
         for (i = stack.length - 1; i > 0; i--) {
           if (stack[i - 1] === '#') {
             base = stack.slice(i, stack.length)
@@ -129,14 +147,17 @@ let parser = function(uprisingRelationTable, rulesArray) {
               stack.splice(i)
               stack.push(sortedGrammar[rule].title)
 
+              console.log("base...")
+              console.log(base)
+
               // arithmetic and assignment poliz
               fullPoliz = [...fullPoliz, ...polizArithAssign(base)]
-
 
               // console.log(calculatePoliz(fullPoliz)) // need to implement later
 
               // output for syntaxTable
-              if (pureTokens[0] === '#') syntaxTable.push([stack.join(' '), mainRelation, programInput.join(' ')])
+              // TODO: add 4th line of poliz at the end
+              if (pureTokens[0] === '#') syntaxTable.push([stack.join(' '), mainRelation, programInput.join(' '), fullPoliz.join(' ')])
 
               break
             }
@@ -175,12 +196,13 @@ function polizArithAssign(base) {
     }
   })
 
-  // assignment
-  if (base.indexOf('=') !== -1 && '=' === base[1]) {
-    singlePoliz.push(base[0]) // left operand
-    singlePoliz.push(base[2]) // right operand
-    singlePoliz.push('=')
-  }
+  // // assignment
+  // if (base.indexOf('=') !== -1 && '=' === base[1]) {
+  // // if ('=' === base[1]) { // ?????
+  //   singlePoliz.push(base[0]) // left operand
+  //   singlePoliz.push(base[2]) // right operand
+  //   singlePoliz.push('=')
+  // }
 
   console.log('~single poliz~ : ' + singlePoliz.join(' '))
   return singlePoliz

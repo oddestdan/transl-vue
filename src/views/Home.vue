@@ -153,7 +153,7 @@ export default {
 
     setRelations() {
       [this.relationTable, this.rules] = relations(this.rules)
-      // outputUprisingTable(this.relationTable, this.rules, 'relationTableOutput')
+      outputUprisingTable(this.relationTable, this.rules, 'relationTableOutput')
       // let win = window.open('rel', '_blank')
       // win.focus()
     },
