@@ -42,6 +42,9 @@ const PROGRAM_END = '}',
 // main buffer
 let buffer = ''
 
+// previous symbol
+let cPrev = ''
+
 // booleans
 let isDeclaring = true,
   isDeclaringLabels = false,
@@ -54,7 +57,7 @@ let isDeclaring = true,
 // sets
 let delimiterSet = '+-<>=!*/()@:\n\t, ',
   whiteDelimiterSet = '\t ',
-  checkForwardDelimiterSet = '<>=!*',
+  checkForwardDelimiterSet = '<>=!',
   signSet = '+-',
   constSymbolSet = '.E'
 
@@ -63,9 +66,7 @@ let delimiterSet = '+-<>=!*/()@:\n\t, ',
 // Process/add lexem to the corresponding lexem table
 // param: lex - string buffer
 let processLexem = function(lex) {
-  if (!lex) {
-    displayLexError('Undefined empty lexem', rowCount)
-  }
+  if (!lex) displayLexError('Undefined empty lexem', rowCount)
 
   let lexeme = new Lexeme()
   lexeme.number = lexCount + 1
@@ -74,13 +75,9 @@ let processLexem = function(lex) {
 
   if (lexemDictionary[lex]) {
     // keyword lexem (from label)
-    if (lex === 'label') {
-      isDeclaringLabels = true
-    }
+    if (lex === 'label') isDeclaringLabels = true
 
-    if (lex === 'int' || lex == 'fixed') {
-      idType = lex
-    }
+    if (lex === 'int' || lex == 'fixed') idType = lex
 
     lexeme.code = lexemDictionary[lex]
     lexeme.constCode = lexeme.labelCode = lexeme.idCode = null
@@ -186,7 +183,7 @@ let processDigit = function(c) {
 // Process delimiters
 // param: c - current character (presumably a delimeter)
 let processDelimiter = function(c) {
-  // if we're checking not << or != etc
+  // if we're not checking << or != etc
   if (buffer && !isCheckingDoubleCharLex) {
     processLexem(buffer)
   }
@@ -204,10 +201,13 @@ let processDelimiter = function(c) {
         isCheckingDoubleCharLex = true
       }
     } else {
-      if (c === '\n') {
+      console.log('char in check: ' + c)
+      if (c === '-' && (buffer === '=')) {
+        processLexem(buffer)
+        processLexem(c)
+      } else if (c === '\n') {
         isDeclaringLabels = false // reset label declaration
         idType = '' // reset Id type
-
         rowCount++
         processLexem(c)
       } else {
@@ -241,6 +241,8 @@ let resetState = function() {
 // Outer loop through each string character
 let lexParser = function(textFileContent) {
   for (let i = 0; i < textFileContent.length; i++) {
+    cPrev = (i >= 1) ? textFileContent.charAt(i - 1) : ''
+
     let c = textFileContent.charAt(i)
     // specific check for fixed number
     if (
@@ -251,6 +253,7 @@ let lexParser = function(textFileContent) {
       continue
     }
 
+    // special check for fixed constant (e.g., 3.4E-7)
     if (!isStringContainingChar(delimiterSet, c)) {
       if (isAlpha(c) || c === '.' || c === 'E') {
         processLetter(c)
@@ -259,6 +262,10 @@ let lexParser = function(textFileContent) {
       }
     }
     if (isStringContainingChar(delimiterSet, c)) {
+      // special check for unary minus
+      console.log(`<< char is: ${c}`)
+      console.log(`   buffer is: ${buffer}`)
+
       processDelimiter(c)
     }
     if (c === DECLARATION_BLOCK_END) {
