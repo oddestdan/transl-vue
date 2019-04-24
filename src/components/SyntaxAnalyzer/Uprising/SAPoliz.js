@@ -73,24 +73,6 @@ let parser = function(uprisingRelationTable, rulesArray) {
     // Parsing
     while (stack.length !== 2 || lexemTable.length !== 1) {
 
-      console.log('============================================')
-
-      // // --------------
-      // let outputStack = []
-      // for (let stackItem of stack) outputStack.push(stackItem.title)
-      // let outputStack2 = []
-      // for (let stackItem of stack) outputStack2.push(stackItem.value)
-      // console.log(`<< INPUT :: ${programInput.join(' ')}`)
-      // console.log(`   MAIN REL :: ${mainRelation}`)
-      // console.log(`   STACK TTL :: ${outputStack.join(' ')}`)
-      // console.log(`   STACK VAL :: ${outputStack2.join(' ')}`)
-      // console.log(`   LEX[0] :: `)
-      // console.log(lexemTable[0])
-      // // --------------
-
-
-      // TODO: Add poliz counter here
-      // Don't forget to use `float(...)` in `calculatePoliz()`
       if (stack[stack.length - 1].value === '\\n' && poliz.length !== 0) {
         calculatePoliz(poliz)
         poliz = [] // reset the poliz
@@ -100,9 +82,7 @@ let parser = function(uprisingRelationTable, rulesArray) {
 
       if (stack[stack.length - 1].value === '#') {
         mainRelation = '<'
-        let outputStack = [] // TODO: Create a function for adding to syntaxTable
-        for (let stackItem of stack) outputStack.push(stackItem.title)
-        syntaxTable.push([outputStack.join(' '), mainRelation, programInput.join(' '), poliz.join(' ')])
+        pushSyntaxTable(syntaxTable, stack, mainRelation, programInput, poliz)
       }
       
       else if (lexemTable[0].value === '#') mainRelation = '>'
@@ -115,9 +95,7 @@ let parser = function(uprisingRelationTable, rulesArray) {
       }
   
       if (stack[stack.length - 1] !== '#') {
-        let outputStack = []
-        for (let stackItem of stack) outputStack.push(stackItem.title)
-        syntaxTable.push([outputStack.join(' '), mainRelation, programInput.join(' '), poliz.join(' ')])
+        pushSyntaxTable(syntaxTable, stack, mainRelation, programInput, poliz)
       }
   
       if (mainRelation === '<' || mainRelation === '=') {
@@ -161,12 +139,6 @@ let parser = function(uprisingRelationTable, rulesArray) {
           }
         }
 
-        // let outputStack2 = []
-        // for (let stackItem of stack) outputStack2.push(stackItem.title)
-        // console.log('>>> Stack is ' + outputStack2.join(', '))
-        // console.log("stackIndex: " + stackIndex)
-        // console.log('<<< Base:' + base.join(' '))
-
         // all LHS values of the grammar
         let rules = []
         grammar.forEach((el, i) => rules[i] = el.title)
@@ -177,17 +149,11 @@ let parser = function(uprisingRelationTable, rulesArray) {
             ruleVariant = ruleVariant.replace(/[']+/g, '') // trim all terminal rules from surrunding ''
           // for (ruleVariant of trimTerminalSingleQuotes(grammar[gramIndex].statements)) {
             if (base.join(' ') === ruleVariant) {
-              // check for negative CON
-              // let isNegativeCON = (stack[stack.length - 1].code === 101) && (float(stack[stack.length - 1].title) < 0)
               let ruleLHS = rules[gramIndex]
               
               // fill the poliz
               poliz.push(getPoliz(base, ruleLHS, stack[stack.length - 1].title, false))
-              // poliz.push(getPoliz(base, ruleLHS, stack[stack.length - 1].title, isNegativeCON)
-              // if (isNegativeCON) poliz.push('@') else
               if (poliz[poliz.length - 1] === '') poliz.splice(-1)
-
-              console.log('}}} Poliz >: ' + poliz.join(' | '))
 
               // remove selected base from stack
               stack.splice(stackIndex)
@@ -196,15 +162,9 @@ let parser = function(uprisingRelationTable, rulesArray) {
               let ruleLexem = new Lexeme(null, ruleLHS, null, null, null, null, null)
               ruleLexem.value = ruleLHS
               stack.push(ruleLexem)
-              
-              let outputStack = []
-              for (let stackItem of stack) outputStack.push(stackItem.title)
-              console.log('>>> Stack is ' + outputStack.join(', '))
 
               if (lexemTable[0].value === '#') {
-                let outputStack = []
-                for (let stackItem of stack) outputStack.push(stackItem.title)
-                syntaxTable.push([outputStack.join(' '), mainRelation, programInput.join(' '), poliz.join(' ')])
+                pushSyntaxTable(syntaxTable, stack, mainRelation, programInput, poliz)
               }
 
               break
@@ -306,6 +266,13 @@ function calculatePoliz(poliz) {
 
 
 // Utility functions
+
+// pushing to output Syntax Table
+function pushSyntaxTable(tab, stack, relation, input, poliz) {
+  let outputStack = []
+  for (let stackItem of stack) outputStack.push(stackItem.title)
+  tab.push([outputStack.join(' '), relation, input.join(' '), poliz.join(' ')])
+}
 
 // easy debug
 function debug(variable) {

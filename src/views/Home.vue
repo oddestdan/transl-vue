@@ -54,8 +54,8 @@
     </div>
     <div id="lexemTableOutput"></div>
     <div id="stateTableOutput"></div>
-    <div id="relationTableOutput"></div>
     <div id="syntaxTableOutput"></div>
+    <div id="relationTableOutput"></div>
   </div>
 </template>
 
@@ -93,8 +93,8 @@ export default {
 
       let tab1 = document.getElementById('lexemTableOutput')
       let tab2 = document.getElementById('stateTableOutput')
-      let tab3 = document.getElementById('relationTableOutput')
-      let tab4 = document.getElementById('syntaxTableOutput')
+      let tab3 = document.getElementById('syntaxTableOutput')
+      let tab4 = document.getElementById('relationTableOutput')
       let tabs = [tab1, tab2, tab3, tab4]
       tabs.forEach(el => el.innerHTML = '')
 
@@ -109,7 +109,6 @@ export default {
       this.lexems = [] // reset
       lexParser(this.programInput)
       this.lexems = lexemTableJSON
-      console.log('Lex:\n' + this.lexems)
     },
     saveLexems() {
       // Download as a JSON file (WebAPI)
@@ -149,7 +148,7 @@ export default {
         case 'Poliz':
           // temporary
           [this.relationTable, this.rules] = relations(this.rules) // will need to be executed on mount | created ?
-          // outputUprisingTable(this.relationTable, this.rules, 'relationTableOutput')
+          outputUprisingTable(this.relationTable, this.rules, 'relationTableOutput')
 
           let syntaxTable2 = parserPoliz(this.lexems, this.relationTable, this.rules)
           outputTable(syntaxTable2, 'syntaxTableOutput', 'text', true)
