@@ -93,9 +93,9 @@
   },
   {
     "number": 11,
-    "title": "*",
+    "title": "+",
     "row": 2,
-    "code": 26,
+    "code": 24,
     "idCode": null,
     "constCode": null,
     "labelCode": null
@@ -111,9 +111,9 @@
   },
   {
     "number": 13,
-    "title": "+",
+    "title": "*",
     "row": 2,
-    "code": 24,
+    "code": 26,
     "idCode": null,
     "constCode": null,
     "labelCode": null

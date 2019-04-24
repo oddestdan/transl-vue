@@ -125,12 +125,12 @@ grammar.push(new Rule(
 )
 grammar.push(new Rule(
   "expression", [
+    "'-' term1",
     "term1",
     "expression '+' term1",
     "expression '-' term1",
-    "'-' term1",
     
-    // -- also works
+    // -- also works (NOT)
     // "term1 '+' expression",
     // "term1 '-' expression",
     // "'-' expression",

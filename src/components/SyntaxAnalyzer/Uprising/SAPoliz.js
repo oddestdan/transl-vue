@@ -73,6 +73,8 @@ let parser = function(uprisingRelationTable, rulesArray) {
     // Parsing
     while (stack.length !== 2 || lexemTable.length !== 1) {
 
+      console.log('============================================')
+
       // // --------------
       // let outputStack = []
       // for (let stackItem of stack) outputStack.push(stackItem.title)
@@ -89,10 +91,10 @@ let parser = function(uprisingRelationTable, rulesArray) {
 
       // TODO: Add poliz counter here
       // Don't forget to use `float(...)` in `calculatePoliz()`
-      // if (stack[stack.length - 1].value === '\\n' && poliz.length !== 0) {
-      //   calculatePoliz(poliz)
-      //   poliz = [] // reset the poliz
-      // }
+      if (stack[stack.length - 1].value === '\\n' && poliz.length !== 0) {
+        calculatePoliz(poliz)
+        poliz = [] // reset the poliz
+      }
   
       if (stack[stack.length - 1].value === '{') counter++
 
@@ -108,7 +110,7 @@ let parser = function(uprisingRelationTable, rulesArray) {
       else {
         let leftIndex = rulesArray.indexOf(stack[stack.length - 1].value)
         let rightIndex = rulesArray.indexOf(lexemTable[0].value)
-        debug('in left right indexes are: ' + leftIndex + ' & ' + rightIndex)
+        // debug('in left right indexes are: ' + leftIndex + ' & ' + rightIndex)
         mainRelation = uprisingRelationTable[leftIndex][rightIndex]
       }
   
@@ -118,31 +120,21 @@ let parser = function(uprisingRelationTable, rulesArray) {
         syntaxTable.push([outputStack.join(' '), mainRelation, programInput.join(' '), poliz.join(' ')])
       }
   
-
-      // TODO: Can change to indexOf single check
-      let checkHelper = false
       if (mainRelation === '<' || mainRelation === '=') {
-        for (let lexIndex in grammar) {
-          if (grammar[lexIndex].title === 'variable_list') checkHelper = true
-          else checkHelper = false
-        }
-        if (counter > 0 && checkHelper) {
-          for (let lexIndex in grammar) {
-            if (grammar[lexIndex].title === 'variable_list') grammar.splice(lexIndex, 1)
-          }
-        }
+        let grammarKeys = []
+        for (let i in grammar) grammarKeys[i] = grammar[i].title
 
-        debug('   in < or =')
+        if (counter >= 0 && grammarKeys.indexOf('variable_list')) {
+          for (let lexIndex in grammar)
+            if (grammar[lexIndex].title === 'variable_list') grammar.splice(lexIndex, 1)
+        }
   
         stack.push(lexemTable.shift())
         programInput.shift()
-      } // End of tudu
+      }
 
 
       else if (mainRelation === '>') {
-
-        debug('   in >')
-
         let base = [] // accumulate the base in stack before excahnge
         let stackIndex = 0 // general stack index
         let gramIndex = 0 // general grammar index
@@ -150,10 +142,11 @@ let parser = function(uprisingRelationTable, rulesArray) {
 
         // select the base from stack
         for (stackIndex = stack.length - 1; stackIndex > 0; stackIndex--) {
+        // for (i = stack.length - 1; i > 0; i--) {
           if (stack[stackIndex - 1].value === '#') {
             base = stack.slice(stackIndex, stack.length)
             for (let i in base) base[i] = base[i].value
-            // for (let unit of base) unit = unit.value
+            break
           } 
           
           else {
@@ -163,13 +156,16 @@ let parser = function(uprisingRelationTable, rulesArray) {
             if (relation === '<') {
               base = stack.slice(stackIndex, stack.length)
               for (let i in base) base[i] = base[i].value
-              // for (let unit of base) unit = unit.value
               break
             }
           }
         }
 
-        console.log('<<< Base:_' + base.join(' '))
+        // let outputStack2 = []
+        // for (let stackItem of stack) outputStack2.push(stackItem.title)
+        // console.log('>>> Stack is ' + outputStack2.join(', '))
+        // console.log("stackIndex: " + stackIndex)
+        // console.log('<<< Base:' + base.join(' '))
 
         // all LHS values of the grammar
         let rules = []
@@ -182,26 +178,28 @@ let parser = function(uprisingRelationTable, rulesArray) {
           // for (ruleVariant of trimTerminalSingleQuotes(grammar[gramIndex].statements)) {
             if (base.join(' ') === ruleVariant) {
               // check for negative CON
-              let isNegativeCON = (stack[stack.length - 1].code === 101) && (float(stack[stack.length - 1].title) < 0)
+              // let isNegativeCON = (stack[stack.length - 1].code === 101) && (float(stack[stack.length - 1].title) < 0)
               let ruleLHS = rules[gramIndex]
               
               // fill the poliz
-              poliz.push(getPoliz(base, ruleLHS, stack[stack.length - 1].value, isNegativeCON))
-              if (isNegativeCON) poliz.push('@') 
-              else if (poliz[poliz.length - 1] === '') poliz.splice(-1)
+              poliz.push(getPoliz(base, ruleLHS, stack[stack.length - 1].title, false))
+              // poliz.push(getPoliz(base, ruleLHS, stack[stack.length - 1].title, isNegativeCON)
+              // if (isNegativeCON) poliz.push('@') else
+              if (poliz[poliz.length - 1] === '') poliz.splice(-1)
 
-              console.log('}}} Poliz_in_>_:_' + poliz.join(' | '))
+              console.log('}}} Poliz >: ' + poliz.join(' | '))
 
               // remove selected base from stack
               stack.splice(stackIndex)
-              debug(stackIndex)
 
               // add current LHS rule title to stack
               let ruleLexem = new Lexeme(null, ruleLHS, null, null, null, null, null)
               ruleLexem.value = ruleLHS
               stack.push(ruleLexem)
               
-              console.log('>>> Stack_is_:_' + stack.join(', '))
+              let outputStack = []
+              for (let stackItem of stack) outputStack.push(stackItem.title)
+              console.log('>>> Stack is ' + outputStack.join(', '))
 
               if (lexemTable[0].value === '#') {
                 let outputStack = []
@@ -263,13 +261,13 @@ function getPoliz(base, rule, returnValue, flag = false) {
 
   if (flag) return (-1 * float(returnValue)).toString()
 
-  else if (base === 'expression + T1' && rule === 'expression') return '+'
-  else if (base === 'expression - T1' && rule === 'expression') return '-'
-  else if (base === '- T1' && rule === 'expression') return '@'
-  else if (base === 'T * F' && rule === 'T') return '*'
-  else if (base === 'T / F' && rule === 'T') return '/'
-  else if (base === 'IDN' && rule === 'F') return returnValue
-  else if (base === 'CON' && rule === 'F') return returnValue
+  else if (base === 'expression + term1' && rule === 'expression') return '+'
+  else if (base === 'expression - term1' && rule === 'expression') return '-'
+  else if (base === '- term1' && rule === 'expression') return '@'
+  else if (base === 'term * factor1' && rule === 'term') return '*'
+  else if (base === 'term / factor1' && rule === 'term') return '/'
+  else if (base === 'IDN' && rule === 'factor') return returnValue
+  else if (base === 'CON' && rule === 'factor') return returnValue
   else return ''
 }
 
@@ -278,25 +276,31 @@ function calculatePoliz(poliz) {
   let stackPoliz = []
   let tmp
 
-  while (poliz) {
+  while (poliz.length !== 0) {
     if (poliz[0].match(/^[0-9]\d*(\.\d+)?$/)) {
-      stackPoliz.push(poliz.splice(-1, 1))
-    } else if (poliz[0].indexOf(['+', '-', '*', '/'] !== -1)) {
-      if (poliz[0] === '+') tmp = stackPoliz[-2] + stackPoliz[-1]
-      else if (poliz[0] === '-') tmp = stackPoliz[-2] - stackPoliz[-1]
-      else if (poliz[0] === '*') tmp = stackPoliz[-2] * stackPoliz[-1]
-      else tmp = stackPoliz[-2] / stackPoliz[-1]
+      stackPoliz.push(poliz.shift())
+    }
+    
+    else if (poliz[0].indexOf(['+', '-', '*', '/'] !== -1)) {
+      if (poliz[0] === '+')
+        tmp = float(stackPoliz[-2]) + float(stackPoliz[-1])
+      else if (poliz[0] === '-')
+        tmp = float(stackPoliz[-2]) - float(stackPoliz[-1])
+      else if (poliz[0] === '*')
+        tmp = float(stackPoliz[-2]) * float(stackPoliz[-1])
+      else
+        tmp = float(stackPoliz[-2]) / float(stackPoliz[-1])
 
-      stackPoliz.splice(stackPoliz.length - 2, tmp)
+      stackPoliz.splice(stackPoliz.length - 2, 2, tmp)
       poliz.shift()
     } else if (poliz[0] === '@') {
-      tmp = stackPoliz[stackPoliz.length - 1] * -1
+      tmp = float(stackPoliz[stackPoliz.length - 1]) * -1
       stackPoliz.splice(-1, 1, tmp)
       poliz.shift()
     }
   }
 
-  console.log('Expression = ' + stackPoliz[0])
+  console.log('Expression = ' + stackPoliz[0].toString())
 }
 
 
