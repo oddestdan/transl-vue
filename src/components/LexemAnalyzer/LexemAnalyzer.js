@@ -201,7 +201,6 @@ let processDelimiter = function(c) {
         isCheckingDoubleCharLex = true
       }
     } else {
-      console.log('char in check: ' + c)
       if (c === '-' && (buffer === '=')) {
         processLexem(buffer)
         processLexem(c)
@@ -262,10 +261,6 @@ let lexParser = function(textFileContent) {
       }
     }
     if (isStringContainingChar(delimiterSet, c)) {
-      // special check for unary minus
-      console.log(`<< char is: ${c}`)
-      console.log(`   buffer is: ${buffer}`)
-
       processDelimiter(c)
     }
     if (c === DECLARATION_BLOCK_END) {

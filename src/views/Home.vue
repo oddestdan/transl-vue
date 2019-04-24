@@ -81,7 +81,7 @@ export default {
       relationTable: [],
       rules: [],
       
-      selectedParser: 'Recursive'
+      selectedParser: 'Poliz'
     }
   },
   methods: {
@@ -91,8 +91,17 @@ export default {
       console.log('PI:\n' + this.programInput)
       console.log('Lex:\n' + this.lexems)
 
+      let tab1 = document.getElementById('lexemTableOutput')
+      let tab2 = document.getElementById('stateTableOutput')
+      let tab3 = document.getElementById('relationTableOutput')
+      let tab4 = document.getElementById('syntaxTableOutput')
+      let tabs = [tab1, tab2, tab3, tab4]
+      tabs.forEach(el => el.innerHTML = '')
+
+      // TODO:
       // remove all text from all textareas
       // remember to select and iteratore over all of them
+      // clear contents of all tables
       
       alert('Everything has been reset')
     },

@@ -1,6 +1,7 @@
 /* eslint-disable */
 import { lexemDictionary } from '@/components/LexemAnalyzer/lexemDictionary'
-import { displaySyntaxError } from '@/utils/utility'
+import Lexeme from '@/components/LexemAnalyzer/Lexeme'
+import { displayParserError } from '@/utils/utility'
 import { grammar } from './grammar'
 
 let rulesArray = []
@@ -14,218 +15,220 @@ export default function parserUprising(lexems, uprisingRelationTable, rules) {
     // trim all terminal rules from surrunding ''
     for (let rule in rulesArray)
       rulesArray[rule] = rulesArray[rule].replace(/[']+/g, '')
+      // rulesArray[rule] = trimTerminalSingleQuotes(rulesArray[rule])
 
     let syntaxTable = parser(uprisingRelationTable, rulesArray)
 
-    alert('Uprising SA successful')
+    // alert('Uprising SA successful')
     return syntaxTable
   } catch (error) {
-    return displaySyntaxError('Ending error\n' + error, lexemTable)
+    return displayParserError('Ending error\n' + error)
   }
 }
 
+// main parser function
 let parser = function(uprisingRelationTable, rulesArray) {
   // Preparation
-  let counter = -1
-
+  let counter = -1 // special counter for "{"
+  let syntaxTable = [] // step-by-step output table
   let mainRelation = '' // main relation sign
+  let poliz = [] // poliz array of string values
 
-  let lexemDicReversed = {}
-  Object.keys(lexemDictionary).forEach(key => (lexemDicReversed[lexemDictionary[key]] = key))
+  let lexemDictInversed = {} // inversed lexemDictionary
+  Object.keys(lexemDictionary).forEach(key => (lexemDictInversed[lexemDictionary[key]] = key))
 
-  let programInput = [], // RHS row of program words (lexem titles)
-    pureTokens = [], // title equivalents of codes
-    stack = [], // LHS stack
-    fullPoliz = [], // formed poliz
-    syntaxTable = [] // output step-by-step table
-
-  for (let lex in lexemTable) {
-    pureTokens[lex] = lexemDicReversed[lexemTable[lex].code]
-
-    programInput[lex] = lexemTable[lex].title
-    if (programInput[lex] === '\n') programInput[lex] = '\\n' // special case for \n
-  }
-  
-  programInput.push('#')
-  pureTokens.push('#')
-  stack.push = '#'
-
-  // converting \n to actual \n (in a form of \\n)
-  for (let token in pureTokens) {
-    if (pureTokens[token] === '\n') pureTokens[token] = '\\n'
-  }
-
-  // Parsing
-  while (stack.length !== 2 || pureTokens.length !== 1) {
-
-    if (stack[stack.length - 1] === '{') counter++
-    if (stack[stack.length - 1] === '#') {
-      mainRelation = '<'
-      syntaxTable.push([stack.join(' '), mainRelation, programInput.join(' '), ''])
-    } else if (pureTokens[0] === '#') {
-      mainRelation = '>'
-    } else {
-      let leftIndex = rulesArray.indexOf(stack[stack.length - 1])
-      let rightIndex = rulesArray.indexOf(pureTokens[0])
-      mainRelation = uprisingRelationTable[leftIndex][rightIndex]
-    }
-
-    if (stack[stack.length - 1] !== '#') {
-      syntaxTable.push([stack.join(' '), mainRelation, programInput.join(' '), ''])
-    }
-
-    let checkHelper = false
-    if (mainRelation === '<' || mainRelation === '=') {
-      for (let obj in grammar) {
-        if (grammar[obj].title === 'variable_list') checkHelper = true
-        else checkHelper = false
-      }
-      if (counter > 0 && checkHelper) {
-        for (let obj in grammar) {
-          if (grammar[obj].title === 'variable_list') grammar.splice(obj, 1)
-        }
-      }
-
-      stack.push(pureTokens.shift())
-      programInput.shift()
-    }
-
-    // ---------------------------------------------
-    // ---------------------------------------------
-    // ---------------------------------------------
+  // add special values to lexems
+  for (let lexem of lexemTable) {
+    if (lexem.title === '\n') lexem.title = '\\n' // adjusting \n
     
-    else if (mainRelation === '>') {
-      let base = []
-      let i = 0
-      let ruleVariant = ''
+    if (lexem.code === 100) lexem.value = 'IDN'
+    else if (lexem.code === 101) lexem.value = 'CON'
+    else if (lexem.code === 102) lexem.value = 'LAB'
+    else lexem.value = lexem.title
+  }
 
-      // if ( counter < 0 && stack[stack.length - 1] === 'IDN' && stack[stack.length - 2] === ',') {
-      //   // stack.splice(stack.length - 3, 3)
-      //   // stack.push('variable_list')
-      //   stack.splice(stack.length - 3, 3, 'variable_list')
-      // } else if (counter < 0 && stack[stack.length - 1] === 'IDN') {
-      //   // stack.splice(stack.length - 1, 1)
-      //   // stack.push('variable_list')
-      //   stack.splice(stack.length - 1, 1, 'variable_list')
+  // limit lexems via # at start and end
+  let start = new Lexeme(null, '#', null, null, null, null, null)
+  start.value = '#'
+  let end = new Lexeme(null, '#', null, null, null, null, null)
+  end.value = '#'
+  lexemTable = [start, ...lexemTable, end]
+
+  // RHS row of program words ['', '', ...]
+  let programInput = []
+  for (let i in lexemTable) programInput[i] = lexemTable[i].title
+  programInput.shift() // remove first '#'
+
+  // LHS stack of titles ['', '', ...]
+  let stack = [lexemTable.shift()]
+
+  // output
+  debug(lexemTable)
+  debug(programInput)
+  debug(stack)
+  debug(grammar)
+  debug(rulesArray)
+  // ================================================================================
+
+    // Parsing
+    while (stack.length !== 2 || lexemTable.length !== 1) {
+
+      // // --------------
+      // let outputStack = []
+      // for (let stackItem of stack) outputStack.push(stackItem.title)
+      // let outputStack2 = []
+      // for (let stackItem of stack) outputStack2.push(stackItem.value)
+      // console.log(`<< INPUT :: ${programInput.join(' ')}`)
+      // console.log(`   MAIN REL :: ${mainRelation}`)
+      // console.log(`   STACK TTL :: ${outputStack.join(' ')}`)
+      // console.log(`   STACK VAL :: ${outputStack2.join(' ')}`)
+      // console.log(`   LEX[0] :: `)
+      // console.log(lexemTable[0])
+      // // --------------
+
+
+      // TODO: Add poliz counter here
+      // Don't forget to use `float(...)` in `calculatePoliz()`
+      // if (stack[stack.length - 1].value === '\\n' && poliz.length !== 0) {
+      //   calculatePoliz(poliz)
+      //   poliz = [] // reset the poliz
       // }
+  
+      if (stack[stack.length - 1].value === '{') counter++
+
+      if (stack[stack.length - 1].value === '#') {
+        mainRelation = '<'
+        let outputStack = [] // TODO: Create a function for adding to syntaxTable
+        for (let stackItem of stack) outputStack.push(stackItem.title)
+        syntaxTable.push([outputStack.join(' '), mainRelation, programInput.join(' '), poliz.join(' ')])
+      }
       
-      // wrap up declaration unit(s)
-      if ( counter < 0 && stack[stack.length - 1] === 'IDN') {
-        // stack[stack.length - 2] === ','
-        // ? stack.splice(stack.length - 3, 3, 'variable_list')
-        // : stack.splice(stack.length - 1, 1, 'variable_list')
-        if (stack[stack.length - 2] === ',') {
-          stack.splice(stack.length - 3, 3, 'variable_list')
-        } else {
-          stack.splice(stack.length - 1, 1, 'variable_list')
+      else if (lexemTable[0].value === '#') mainRelation = '>'
+      
+      else {
+        let leftIndex = rulesArray.indexOf(stack[stack.length - 1].value)
+        let rightIndex = rulesArray.indexOf(lexemTable[0].value)
+        debug('in left right indexes are: ' + leftIndex + ' & ' + rightIndex)
+        mainRelation = uprisingRelationTable[leftIndex][rightIndex]
+      }
+  
+      if (stack[stack.length - 1] !== '#') {
+        let outputStack = []
+        for (let stackItem of stack) outputStack.push(stackItem.title)
+        syntaxTable.push([outputStack.join(' '), mainRelation, programInput.join(' '), poliz.join(' ')])
+      }
+  
+
+      // TODO: Can change to indexOf single check
+      let checkHelper = false
+      if (mainRelation === '<' || mainRelation === '=') {
+        for (let lexIndex in grammar) {
+          if (grammar[lexIndex].title === 'variable_list') checkHelper = true
+          else checkHelper = false
         }
-      } else {
-        // select base from stack
-        for (i = stack.length - 1; i > 0; i--) {
-          if (stack[i - 1] === '#') {
-            base = stack.slice(i, stack.length)
-            break
-          } else {
-            let stackLeftIndex = rulesArray.indexOf(stack[i - 1])
-            let stackRightIndex = rulesArray.indexOf(stack[i])
+        if (counter > 0 && checkHelper) {
+          for (let lexIndex in grammar) {
+            if (grammar[lexIndex].title === 'variable_list') grammar.splice(lexIndex, 1)
+          }
+        }
+
+        debug('   in < or =')
+  
+        stack.push(lexemTable.shift())
+        programInput.shift()
+      } // End of tudu
+
+
+      else if (mainRelation === '>') {
+
+        debug('   in >')
+
+        let base = [] // accumulate the base in stack before excahnge
+        let stackIndex = 0 // general stack index
+        let gramIndex = 0 // general grammar index
+        let ruleVariant  = '' // some grammar rule from all RHS variants
+
+        // select the base from stack
+        for (stackIndex = stack.length - 1; stackIndex > 0; stackIndex--) {
+          if (stack[stackIndex - 1].value === '#') {
+            base = stack.slice(stackIndex, stack.length)
+            for (let i in base) base[i] = base[i].value
+            // for (let unit of base) unit = unit.value
+          } 
+          
+          else {
+            let stackLeftIndex = rulesArray.indexOf(stack[stackIndex - 1].value)
+            let stackRightIndex = rulesArray.indexOf(stack[stackIndex].value)
             let relation = uprisingRelationTable[stackLeftIndex][stackRightIndex]
             if (relation === '<') {
-              base = stack.slice(i, stack.length)
+              base = stack.slice(stackIndex, stack.length)
+              for (let i in base) base[i] = base[i].value
+              // for (let unit of base) unit = unit.value
               break
             }
           }
         }
 
-        let sortedGrammar = grammar.sort((a, b) =>
-          ('' + a.title).localeCompare(b.title)
-        )
+        console.log('<<< Base:_' + base.join(' '))
 
-        for (let rule in sortedGrammar) {
-          for (ruleVariant of grammar[rule].statements) {
+        // all LHS values of the grammar
+        let rules = []
+        grammar.forEach((el, i) => rules[i] = el.title)
+
+        // find RHS that is equal to possible base and wrap it
+        for (gramIndex in grammar) {
+          for (ruleVariant of grammar[gramIndex].statements) {
             ruleVariant = ruleVariant.replace(/[']+/g, '') // trim all terminal rules from surrunding ''
-            if (ruleVariant === base.join(' ')) {
-              stack.splice(i)
-              stack.push(sortedGrammar[rule].title)
+          // for (ruleVariant of trimTerminalSingleQuotes(grammar[gramIndex].statements)) {
+            if (base.join(' ') === ruleVariant) {
+              // check for negative CON
+              let isNegativeCON = (stack[stack.length - 1].code === 101) && (float(stack[stack.length - 1].title) < 0)
+              let ruleLHS = rules[gramIndex]
+              
+              // fill the poliz
+              poliz.push(getPoliz(base, ruleLHS, stack[stack.length - 1].value, isNegativeCON))
+              if (isNegativeCON) poliz.push('@') 
+              else if (poliz[poliz.length - 1] === '') poliz.splice(-1)
 
-              console.log("base...")
-              console.log(base)
+              console.log('}}} Poliz_in_>_:_' + poliz.join(' | '))
 
-              // arithmetic and assignment poliz
-              fullPoliz = [...fullPoliz, ...polizArithAssign(base)]
+              // remove selected base from stack
+              stack.splice(stackIndex)
+              debug(stackIndex)
 
-              // console.log(calculatePoliz(fullPoliz)) // need to implement later
+              // add current LHS rule title to stack
+              let ruleLexem = new Lexeme(null, ruleLHS, null, null, null, null, null)
+              ruleLexem.value = ruleLHS
+              stack.push(ruleLexem)
+              
+              console.log('>>> Stack_is_:_' + stack.join(', '))
 
-              // output for syntaxTable
-              // TODO: add 4th line of poliz at the end
-              if (pureTokens[0] === '#') syntaxTable.push([stack.join(' '), mainRelation, programInput.join(' '), fullPoliz.join(' ')])
+              if (lexemTable[0].value === '#') {
+                let outputStack = []
+                for (let stackItem of stack) outputStack.push(stackItem.title)
+                syntaxTable.push([outputStack.join(' '), mainRelation, programInput.join(' '), poliz.join(' ')])
+              }
 
               break
             }
+          
           }
           if (base.join(' ') === ruleVariant) break
         }
 
         if (base.join(' ') !== ruleVariant) {
-          displaySyntaxError(`Incorrect end of program on ${stack[stack.length - 1]}`, lexemTable)
+          displayParserError(`Incorrect end of program on ${stack[stack.length - 1].title}`, lexemTable)
           break
         }
+
+      } else {
+        displayParserError(`No table relation found for: ${stack[stack.length - 1].value} and ${lexemTable[0].value}`,lexemTable)
+        break
       }
-    } else {
-      displaySyntaxError(`No table relation found for: ${stack[stack.length - 1]} and ${pureTokens[0]}`, lexemTable)
-      break
     }
+  
+    return syntaxTable
   }
-
-  console.log('Resulting Poliz array')
-  console.log(fullPoliz)
-
-  return syntaxTable
-}
-
-
-function polizArithAssign(base) {
-  let singlePoliz = []
-  let words = ['+', '-', '*', '/']
-
-  // arithmetic
-  words.forEach(word => {
-    if (base.indexOf(word) !== -1) {
-      singlePoliz.push(base[0]) // left operand
-      singlePoliz.push(base[2]) // right operand
-      singlePoliz.push(word)
-    }
-  })
-
-  // // assignment
-  // if (base.indexOf('=') !== -1 && '=' === base[1]) {
-  // // if ('=' === base[1]) { // ?????
-  //   singlePoliz.push(base[0]) // left operand
-  //   singlePoliz.push(base[2]) // right operand
-  //   singlePoliz.push('=')
-  // }
-
-  console.log('~single poliz~ : ' + singlePoliz.join(' '))
-  return singlePoliz
-}
-
-// iterate over the whole poliz and find:
-// expression1 sign expression1 -- in case of arithmetic operation
-// IDN = expression1 -- in case of assignment operation
-function calculatePoliz(poliz) {
-  let words = ['+', '-', '*', '/']
-
-  for (let index in poliz) {
-    // evaluate poliz as arithmetic expression
-    if (words.indexOf(poliz[index]) !== -1) {
-      poliz.splice(index - 2, 3, eval('poliz.push(poliz[index - 2]' + poliz[index] + 'poliz[index - 1])'))
-    }
-    // assign IDN a specific value through poliz
-    if (poliz[index] === '=') {
-      poliz[index - 2] = poliz[index - 1]
-    }
-  }
-}
-
 
 
 /*
@@ -251,5 +254,70 @@ function calculatePoliz(poliz) {
       //  Если не нашли то выводится синтакс ошибка и завершение
   4.3.3) Система заменяет в стеке элементы возможной основы на левую часть правила
 */
+
+
+
+function getPoliz(base, rule, returnValue, flag = false) {
+  base = base.join(' ')
+  console.log('in getPoliz()-- base: ' + base + ' | rule: ' + rule)
+
+  if (flag) return (-1 * float(returnValue)).toString()
+
+  else if (base === 'expression + T1' && rule === 'expression') return '+'
+  else if (base === 'expression - T1' && rule === 'expression') return '-'
+  else if (base === '- T1' && rule === 'expression') return '@'
+  else if (base === 'T * F' && rule === 'T') return '*'
+  else if (base === 'T / F' && rule === 'T') return '/'
+  else if (base === 'IDN' && rule === 'F') return returnValue
+  else if (base === 'CON' && rule === 'F') return returnValue
+  else return ''
+}
+
+// change to floats when done
+function calculatePoliz(poliz) {
+  let stackPoliz = []
+  let tmp
+
+  while (poliz) {
+    if (poliz[0].match(/^[0-9]\d*(\.\d+)?$/)) {
+      stackPoliz.push(poliz.splice(-1, 1))
+    } else if (poliz[0].indexOf(['+', '-', '*', '/'] !== -1)) {
+      if (poliz[0] === '+') tmp = stackPoliz[-2] + stackPoliz[-1]
+      else if (poliz[0] === '-') tmp = stackPoliz[-2] - stackPoliz[-1]
+      else if (poliz[0] === '*') tmp = stackPoliz[-2] * stackPoliz[-1]
+      else tmp = stackPoliz[-2] / stackPoliz[-1]
+
+      stackPoliz.splice(stackPoliz.length - 2, tmp)
+      poliz.shift()
+    } else if (poliz[0] === '@') {
+      tmp = stackPoliz[stackPoliz.length - 1] * -1
+      stackPoliz.splice(-1, 1, tmp)
+      poliz.shift()
+    }
+  }
+
+  console.log('Expression = ' + stackPoliz[0])
+}
+
+
+
+// Utility functions
+
+// easy debug
+function debug(variable) {
+  // console.log(`>> ${Object.keys({variable})[0]} :`)
+  console.log(`>> debugging...`)
+  console.log(variable)
+}
+
+// trims all ' from terminal strings
+function trimTerminalSingleQuotes(str) {
+  return str.replace(/[']+/g, '')
+}
+
+// easier conversion to float
+function float(str) {
+  return Number.parseFloat(str)
+}
 
 export { parserUprising }

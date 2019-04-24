@@ -22,6 +22,14 @@ let displayLexError = function(message, rowCount = 0) {
   throw new Error(errorMessage)
 }
 
+// Display a parser error via console and header (no nums / rows)
+let displayParserError = function(message) {
+  const errorMessage = 'Parser Error: ' + message
+  console.log(errorMessage)
+  alert(errorMessage)
+  return false
+}
+
 // Display a syntax error via console and header
 let displaySyntaxError = function(message, lexemTable, i = 0) {
   const errorMessage =
@@ -97,6 +105,7 @@ let isMultipleNegative = function(str) {
 export {
   convertArrayToTable,
   displayLexError,
+  displayParserError,
   displaySyntaxError,
   // getIndexCode,
   isStringContainingChar,

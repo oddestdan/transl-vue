@@ -75,7 +75,16 @@
   },
   {
     "number": 9,
-    "title": "256",
+    "title": "-",
+    "row": 2,
+    "code": 25,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 10,
+    "title": "250",
     "row": 2,
     "code": 101,
     "idCode": null,
@@ -83,7 +92,70 @@
     "labelCode": null
   },
   {
-    "number": 10,
+    "number": 11,
+    "title": "*",
+    "row": 2,
+    "code": 26,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 12,
+    "title": "2",
+    "row": 2,
+    "code": 101,
+    "idCode": null,
+    "constCode": 2,
+    "labelCode": null
+  },
+  {
+    "number": 13,
+    "title": "+",
+    "row": 2,
+    "code": 24,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 14,
+    "title": "(",
+    "row": 2,
+    "code": 28,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 15,
+    "title": "-",
+    "row": 2,
+    "code": 25,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 16,
+    "title": "240",
+    "row": 2,
+    "code": 101,
+    "idCode": null,
+    "constCode": 3,
+    "labelCode": null
+  },
+  {
+    "number": 17,
+    "title": ")",
+    "row": 2,
+    "code": 29,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 18,
     "title": "\n",
     "row": 3,
     "code": 30,
@@ -92,7 +164,7 @@
     "labelCode": null
   },
   {
-    "number": 11,
+    "number": 19,
     "title": "j",
     "row": 3,
     "code": 100,
@@ -101,7 +173,7 @@
     "labelCode": null
   },
   {
-    "number": 12,
+    "number": 20,
     "title": "=",
     "row": 3,
     "code": 15,
@@ -110,16 +182,16 @@
     "labelCode": null
   },
   {
-    "number": 13,
+    "number": 21,
     "title": "42",
     "row": 3,
     "code": 101,
     "idCode": null,
-    "constCode": 2,
+    "constCode": 4,
     "labelCode": null
   },
   {
-    "number": 14,
+    "number": 22,
     "title": "+",
     "row": 3,
     "code": 24,
@@ -128,16 +200,16 @@
     "labelCode": null
   },
   {
-    "number": 15,
+    "number": 23,
     "title": "4",
     "row": 3,
     "code": 101,
     "idCode": null,
-    "constCode": 3,
+    "constCode": 5,
     "labelCode": null
   },
   {
-    "number": 16,
+    "number": 24,
     "title": "*",
     "row": 3,
     "code": 26,
@@ -146,16 +218,16 @@
     "labelCode": null
   },
   {
-    "number": 17,
+    "number": 25,
     "title": "5",
     "row": 3,
     "code": 101,
     "idCode": null,
-    "constCode": 4,
+    "constCode": 6,
     "labelCode": null
   },
   {
-    "number": 18,
+    "number": 26,
     "title": "/",
     "row": 3,
     "code": 27,
@@ -164,16 +236,34 @@
     "labelCode": null
   },
   {
-    "number": 19,
+    "number": 27,
     "title": "20",
     "row": 3,
     "code": 101,
     "idCode": null,
-    "constCode": 5,
+    "constCode": 7,
     "labelCode": null
   },
   {
-    "number": 20,
+    "number": 28,
+    "title": "*",
+    "row": 3,
+    "code": 26,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 29,
+    "title": "(",
+    "row": 3,
+    "code": 28,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 30,
     "title": "-",
     "row": 3,
     "code": 25,
@@ -182,16 +272,43 @@
     "labelCode": null
   },
   {
-    "number": 21,
+    "number": 31,
+    "title": "2",
+    "row": 3,
+    "code": 101,
+    "idCode": null,
+    "constCode": 2,
+    "labelCode": null
+  },
+  {
+    "number": 32,
+    "title": "+",
+    "row": 3,
+    "code": 24,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 33,
     "title": "1",
     "row": 3,
     "code": 101,
     "idCode": null,
-    "constCode": 6,
+    "constCode": 8,
     "labelCode": null
   },
   {
-    "number": 22,
+    "number": 34,
+    "title": ")",
+    "row": 3,
+    "code": 29,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 35,
     "title": "\n",
     "row": 4,
     "code": 30,
@@ -200,7 +317,7 @@
     "labelCode": null
   },
   {
-    "number": 23,
+    "number": 36,
     "title": "}",
     "row": 4,
     "code": 13,
@@ -209,7 +326,7 @@
     "labelCode": null
   },
   {
-    "number": 24,
+    "number": 37,
     "title": "\n",
     "row": 5,
     "code": 30,
