@@ -9,7 +9,6 @@ export default function relations(rules) {
   try {
     rulesArray = rules
     return [setRelations(), rulesArray]
-    // return setRelations()
     // outputUprisingTable(relationTable, rulesArray, 'relationTableOutput')
   } catch (error) {
     throw new Error('Relations error\n' + error)
