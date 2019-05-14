@@ -73,6 +73,7 @@ import relations from '@/components/SyntaxAnalyzer/Uprising/relations.js'
 import outputUprisingTable from '@/utils/outputUprisingTable.js'
 import parserUprising from '@/components/SyntaxAnalyzer/Uprising/SAUprising.js'
 import parserArithmPoliz from '@/components/SyntaxAnalyzer/Uprising/SAPolizArithm.js'
+import parserPoliz from '@/components/SyntaxAnalyzer/Uprising/SAPoliz.js'
 export default {
   data() {
     return {
@@ -88,7 +89,7 @@ export default {
     resetAll() {
       this.programInput = ''
       this.lexems = []
-      let tabs = [
+      const tabs = [
         document.getElementById('lexemTableOutput'), 
         document.getElementById('stateTableOutput'),
         document.getElementById('syntaxTableOutput'),
@@ -96,11 +97,25 @@ export default {
       ]
       tabs.forEach(el => el.innerHTML = '')
 
-      // TODO: remove all text from all textareas
-      // remember to select and iterate over all of them
-      // clear contents of all tables
+      const chosenFiles = document.getElementsByClassName('chosenFile')
+      let filenames = [];
       
+      for (let i = 0; i < chosenFiles.length; i++) {
+        filenames[i] = chosenFiles[i].value
+
+        if (!(/^\s*$/.test(filenames[i]))) {
+          console.log('replacing in filenames[i]')
+          document
+            .getElementsByClassName('file-upload')[i]
+            .classList.remove('active')
+          document
+            .getElementsByClassName('noFile')[i]
+            .innerHTML = 'No file chosen...'
+        }
+      }
+
       alert('Everything has been reset')
+      console.clear()
     },
     lexemAnalyze() {
       this.lexems = [] // reset
@@ -114,8 +129,8 @@ export default {
       // Download as a JSON file (WebAPI)
       let a = document.createElement('a')
       const file = new Blob([this.lexems], { type: 'text/plain;charset=utf-8' })
-      a.href = URL.createObjectURL(file)
       const val = document.getElementById('saveFile').value
+      a.href = URL.createObjectURL(file)
       a.download = val ? val + '.json' : 'lexems.json'
       a.click()
     },
@@ -137,18 +152,29 @@ export default {
           }
           break
         case 'Uprising':
-          // temporary
           [this.relationTable, this.rules] = relations(this.rules) // will need to be executed on mount | created ?
-          // outputUprisingTable(this.relationTable, this.rules, 'relationTableOutput')
-          let syntaxTable1 = parserUprising(this.lexems, this.relationTable, this.rules)
-          outputTable(syntaxTable1, 'syntaxTableOutput', 'text', true)
+          outputTable(
+            parserUprising(this.lexems, this.relationTable, this.rules),
+            'syntaxTableOutput',
+            'text', true
+          )
           break
         case 'Arithm Poliz':
-          // temporary
           [this.relationTable, this.rules] = relations(this.rules) // will need to be executed on mount | created ?
           outputUprisingTable(this.relationTable, this.rules, 'relationTableOutput')
-          let syntaxTable2 = parserArithmPoliz(this.lexems, this.relationTable, this.rules)
-          outputTable(syntaxTable2, 'syntaxTableOutput', 'text', true)
+          outputTable(
+            parserArithmPoliz(this.lexems, this.relationTable, this.rules),
+            'syntaxTableOutput',
+            'text', true
+          )
+          break
+        case 'Poliz':
+          let table = parserPoliz(this.lexems)
+          outputTable(
+            table,
+            'syntaxTableOutput',
+            'text', true
+          )
           break
         default:
           parserRecursive(this.lexems)

@@ -214,10 +214,8 @@ let parser = function(uprisingRelationTable, rulesArray) {
 
 function getPoliz(base, rule, returnValue, flag = false) {
   base = base.join(' ')
-  console.log('in getPoliz()-- base: ' + base + ' | rule: ' + rule)
 
   if (flag) return (-1 * float(returnValue)).toString()
-
   else if (base === 'expression + term1' && rule === 'expression') return '+'
   else if (base === 'expression - term1' && rule === 'expression') return '-'
   else if (base === '- term1' && rule === 'expression') return '@'

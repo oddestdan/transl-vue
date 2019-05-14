@@ -1,31 +1,112 @@
 /* eslint-disable */
-import { lexemDictionary } from '@/components/LexemAnalyzer/lexemDictionary'
-import Lexeme from '@/components/LexemAnalyzer/Lexeme'
-import { displayParserError } from '@/utils/utility'
+// import { lexemDictionary } from '@/components/LexemAnalyzer/lexemDictionary'
+// import Lexeme from '@/components/LexemAnalyzer/Lexeme'
+// import { displayParserError } from '@/utils/utility'
 import { priorities } from "./priorities";
-import { grammar } from './grammar'
 
-let rulesArray = []
-let lexemTable = []
+export default function parserUprising(lexemsJSON) {
+  let lexems = JSON.parse(lexemsJSON)
+  addValuesToLexems(lexems)
 
-export default function parserUprising(lexems, uprisingRelationTable, rules) {
-  lexemTable = JSON.parse(lexems)
-  rulesArray = rules
-
-  // try {
-    // trim all terminal rules from surrunding ''
-    for (let rule in rulesArray)
-      rulesArray[rule] = trimTerminalSingleQuotes(rulesArray[rule])
-
-    // let syntaxTable = parser(uprisingRelationTable, rulesArray)
-    let syntaxTable
-
-    // alert('Uprising SA successful')
-    return syntaxTable
-  // } catch (error) {
-    // return displayParserError('Ending error\n' + error)
-  // }
+  let syntaxTable = parser(lexems)
+  return syntaxTable // TODO: can be shortened
 }
+
+// add extra 'value' property to lexems for poliz algorithm 
+function addValuesToLexems(lexems) {
+  for (let lexem of lexems) {
+    if (isDefined(lexem.idCode)) {
+      lexem.value = 'IDN'
+    } else if (isDefined(lexem.constCode)) {
+      lexem.value = 'CON'
+    } else if (isDefined(lexem.labelCode)) {
+      lexem.value = 'LAB'
+    } else {
+      lexem.value = null
+    }
+  }
+}
+
+// main parser function
+let parser = function(lexems) {
+  console.log('those are lexems currently')
+  console.log(lexems)
+
+  let stack = [],
+      input = [],
+      output = []
+
+  for (let i in lexems) {
+    input[i] = lexems[i].title
+  }
+
+  console.log('input')
+  console.log(input)
+
+  dijkstra(lexems, stack, input, output)
+
+  console.log('input')
+  console.log(input)
+
+  console.log('stack')
+  console.log(stack)
+
+  console.log('output')
+  console.log(output)
+
+  return []
+}
+
+// dijkstra algorithm
+let dijkstra = function(lexems, stack, input, output) {
+  for (let operation in input) {
+    console.log('>>> ' + lexems[operation].value)
+
+    // if IDN or CON [or LAB]
+    if (lexems[operation].value !== null) {
+      output.push(input[operation]) // IO -> output
+      continue
+    }
+
+    let isCheckingStack = true
+    while (isCheckingStack) {
+      // console.log(stack[0])
+      // console.log(priorities[stack[0]])
+      // console.log(input[operation])
+      // console.log(priorities[input[operation]])
+      if (stack.length !== 0 && priorities[stack[0]].stack >= priorities[input[operation]].stack) {
+        output.push(stack.shift()) // stack[0] -> output, repeat this part
+      } else {
+        stack.unshift(input[operation]) // IO -> stack
+        isCheckingStack = false
+      }
+    }
+
+    // if stack is empty
+    if (stack.length === 0) {
+      stack.unshift(input[operation]) // IO -> stack
+    }
+  }
+
+  // if input is empty
+  console.log('empty input -> clearing stack & adding it to output')
+  console.log('stack is: ')
+  console.log(stack)
+  while (stack.length !== 0) {
+    output.push(stack.shift()) // SO -> output
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
 
 // main parser function
 // let parser = function(uprisingRelationTable, rulesArray) {
@@ -242,6 +323,11 @@ export default function parserUprising(lexems, uprisingRelationTable, rules) {
 
 // Utility functions
 
+// easier check for null / undefined
+function isDefined(value) {
+  return (value !== null && value !== undefined)
+}
+
 // pushing to output Syntax Table
 function pushSyntaxTable(tab, stack, relation, input, poliz) {
   let outputStack = []
@@ -254,11 +340,6 @@ function debug(variable) {
   // console.log(`>> ${Object.keys({variable})[0]} :`)
   console.log(`>>> debugging... <<<`)
   console.log(variable)
-}
-
-// trims all ' from terminal strings
-function trimTerminalSingleQuotes(str) {
-  return str.replace(/[']+/g, '')
 }
 
 // easier conversion to float

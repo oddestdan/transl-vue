@@ -7,7 +7,7 @@ export let priorities = {
   'iput':   { stack: 0, compare: 10 },
   'oput':   { stack: 0, compare: 10 },
 
-  '\\n':    { stack: 1, compare: 1 },
+  '\n':    { stack: 1, compare: 1 },
   ')':      { stack: 1, compare: 1 },
   '}':      { stack: 1, compare: 1 },
   'goto':   { stack: 1, compare: 1 },
@@ -20,6 +20,8 @@ export let priorities = {
   'int':    { stack: 2, compare: 101 },
   'float':  { stack: 2, compare: 101 },
   'label':  { stack: 2, compare: 101 },
+
+  ',':      { stack: 3, compare: 3 },
 
   '<':      { stack: 3, compare: 3 },
   '<=':     { stack: 3, compare: 3 },
