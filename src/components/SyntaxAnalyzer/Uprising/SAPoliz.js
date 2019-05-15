@@ -1,15 +1,17 @@
 /* eslint-disable */
-// import { lexemDictionary } from '@/components/LexemAnalyzer/lexemDictionary'
 // import Lexeme from '@/components/LexemAnalyzer/Lexeme'
-// import { displayParserError } from '@/utils/utility'
+import { mapTableToObjectWithKeys } from '@/utils/utility'
 import { priorities } from "./priorities";
 
 export default function parserUprising(lexemsJSON) {
   let lexems = JSON.parse(lexemsJSON)
   addValuesToLexems(lexems)
 
-  let syntaxTable = parser(lexems)
-  return syntaxTable // TODO: can be shortened
+  let outputTable = []
+  parser(lexems, outputTable)
+
+  outputTable = mapTableToObjectWithKeys(outputTable, ['operation', 'stack', 'poliz'])
+  return outputTable // TODO: can be shortened
 }
 
 // add extra 'value' property to lexems for poliz algorithm 
@@ -28,8 +30,8 @@ function addValuesToLexems(lexems) {
 }
 
 // main parser function
-let parser = function(lexems) {
-  console.log('those are lexems currently')
+let parser = function(lexems, outputTable) {
+  console.log('initial lexems')
   console.log(lexems)
 
   let stack = [],
@@ -39,62 +41,73 @@ let parser = function(lexems) {
   for (let i in lexems) {
     input[i] = lexems[i].title
   }
-
-  console.log('input')
-  console.log(input)
-
-  dijkstra(lexems, stack, input, output)
-
-  console.log('input')
-  console.log(input)
-
-  console.log('stack')
-  console.log(stack)
-
-  console.log('output')
-  console.log(output)
-
+  dijkstra(lexems, stack, input, output, outputTable)
   return []
 }
 
 // dijkstra algorithm
-let dijkstra = function(lexems, stack, input, output) {
-  for (let operation in input) {
-    console.log('>>> ' + lexems[operation].value)
+let dijkstra = function(lexems, stack, input, output, outputTable) {
+  let tags = []
+
+  while (input.length !== 0) {
+    let operationLexem = lexems.find(el => {
+      if (el.title === input[0]) return el
+    })
+
+    pushOutputTable(outputTable, operationLexem.title, stack, output)
+
+    console.log('   --- operationLexem: ' + operationLexem.title)
+    console.log('   === stack: ')
+    console.log(stack)
+    console.log('   === ======================')
 
     // if IDN or CON [or LAB]
-    if (lexems[operation].value !== null) {
-      output.push(input[operation]) // IO -> output
+    if (operationLexem.value !== null) {
+      console.log('-- in 1')
+      output.push(operationLexem.title) // IO -> output
+      input.shift()
       continue
     }
 
-    let isCheckingStack = true
-    while (isCheckingStack) {
-      // console.log(stack[0])
-      // console.log(priorities[stack[0]])
-      // console.log(input[operation])
-      // console.log(priorities[input[operation]])
-      if (stack.length !== 0 && priorities[stack[0]].stack >= priorities[input[operation]].stack) {
-        output.push(stack.shift()) // stack[0] -> output, repeat this part
-      } else {
-        stack.unshift(input[operation]) // IO -> stack
-        isCheckingStack = false
+    // filter through not needed symbols (e.g., '{', '}', ...)
+    if (!isInPriorities(input[0], priorities)) {
+      console.log('---- in 2.1 (check)')
+      input.shift()
+      continue
+    } else {
+      console.log('---- in 2.2')
+      let isCheckingStack = true
+      while (isCheckingStack) {
+        console.log('----~ in 2.2while')
+        if (stack.length !== 0 && priorities[stack[0]].stack >= priorities[input[0]].compare) {
+          console.log('------ in 2.2.1')
+          output.push(stack.shift()) // stack[0] -> output, repeat this part
+        } else {
+          console.log('------ in 2.2.2')
+          stack.unshift(input.shift()) // IO -> stack
+          isCheckingStack = false
+        }
       }
     }
 
+    // console.log(operationLexem)
+    // console.log(stack)
+    // console.log(output)
+
     // if stack is empty
     if (stack.length === 0) {
-      stack.unshift(input[operation]) // IO -> stack
+      console.log('-- in 3')
+      stack.unshift(input.shift()) // IO -> stack
     }
   }
 
   // if input is empty
-  console.log('empty input -> clearing stack & adding it to output')
-  console.log('stack is: ')
-  console.log(stack)
   while (stack.length !== 0) {
+    console.log('-- in 4')
     output.push(stack.shift()) // SO -> output
   }
+    
+  pushOutputTable(outputTable, '', stack, output)
 }
 
 
@@ -323,16 +336,20 @@ let dijkstra = function(lexems, stack, input, output) {
 
 // Utility functions
 
+// check if current operation is present in priorities table
+function isInPriorities(operation, priorities) {
+  return Object.keys(priorities).includes(operation)
+}
+
 // easier check for null / undefined
 function isDefined(value) {
   return (value !== null && value !== undefined)
 }
 
-// pushing to output Syntax Table
-function pushSyntaxTable(tab, stack, relation, input, poliz) {
-  let outputStack = []
-  for (let stackItem of stack) outputStack.push(stackItem.title)
-  tab.push([outputStack.join(' '), relation, input.join(' '), poliz.join(' ')])
+// pushing to output Output Table
+function pushOutputTable(tab, operation, stack, poliz) {
+  // symbol (current) | stack (full) | poliz (current)
+  tab.push([operation, stack.join(' '), poliz.join(' ')])
 }
 
 // easy debug

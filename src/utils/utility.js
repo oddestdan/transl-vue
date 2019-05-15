@@ -1,3 +1,15 @@
+let mapTableToObjectWithKeys = function(inputTable, keys) {
+  let outputTable = []
+  for (let unit of inputTable) {
+    let obj = {}
+    for (let i in keys) {
+      obj[keys[i]] = unit[i]
+    }
+    outputTable.push(obj)
+  }
+  return outputTable
+}
+
 // Convert from array to array of objects for output
 let convertArrayToTable = function(array) {
   let table = []
@@ -103,6 +115,7 @@ let isMultipleNegative = function(str) {
 }
 
 export {
+  mapTableToObjectWithKeys,
   convertArrayToTable,
   displayLexError,
   displayParserError,

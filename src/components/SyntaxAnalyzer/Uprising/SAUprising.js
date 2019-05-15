@@ -1,5 +1,5 @@
 import { lexemDictionary } from '@/components/LexemAnalyzer/lexemDictionary'
-import { displaySyntaxError } from '@/utils/utility'
+import { displaySyntaxError, mapTableToObjectWithKeys } from '@/utils/utility'
 import { grammar } from './grammar'
 
 let rulesArray = []
@@ -14,13 +14,13 @@ export default function parserUprising(lexems, uprisingRelationTable, rules) {
     for (let rule in rulesArray)
       rulesArray[rule] = rulesArray[rule].replace(/[']+/g, '')
 
-    // for (let obj in grammar)
-    // if (grammar[obj].title === 'variable_list')
-    // ruleVarList = grammar[obj] // needed ???
-
     let syntaxTable = parser(uprisingRelationTable, rulesArray)
+    syntaxTable = mapTableToObjectWithKeys(syntaxTable, [
+      'stack',
+      'relation',
+      'input'
+    ])
 
-    alert('Uprising SA successful')
     return syntaxTable
   } catch (error) {
     return displaySyntaxError('Ending error\n' + error, lexemTable)
