@@ -36,301 +36,100 @@ let parser = function(lexems, outputTable) {
 
   let stack = [],
       input = [],
-      output = []
+      poliz = []
 
   for (let i in lexems) {
-    input[i] = lexems[i].title
+    input[i] = lexems[i]
   }
-  dijkstra(lexems, stack, input, output, outputTable)
-  return []
+  dijkstra(lexems, stack, input, poliz, outputTable)
 }
 
 // dijkstra algorithm
-let dijkstra = function(lexems, stack, input, output, outputTable) {
+let dijkstra = function(lexems, stack, input, poliz, outputTable) {
   let tags = []
 
+  // for loop helpers
+  let loopVariable = '',
+      loopFeature = 0,
+      loopHelp = [],
+      isLoop = []
+
   while (input.length !== 0) {
-    let operationLexem = lexems.find(el => {
-      if (el.title === input[0]) return el
-    })
-
-    pushOutputTable(outputTable, operationLexem.title, stack, output)
-
-    console.log('   --- operationLexem: ' + operationLexem.title)
+    console.log('   --- input[0]: ' + input[0].title)
     console.log('   === stack: ')
-    console.log(stack)
+    let stackOut = []
+    for (let i in stack) stackOut[i] = stack[i].title
+    console.log(stackOut)
     console.log('   === ======================')
 
-    // if IDN or CON [or LAB]
-    if (operationLexem.value !== null) {
-      console.log('-- in 1')
-      output.push(operationLexem.title) // IO -> output
-      input.shift()
-      continue
-    }
+    pushOutputTable(outputTable, input[0].title, stack, poliz)
 
-    // filter through not needed symbols (e.g., '{', '}', ...)
-    if (!isInPriorities(input[0], priorities)) {
-      console.log('---- in 2.1 (check)')
+    // 1) IDN or CON [or LAB]
+    if (input[0].value !== null) {
+      poliz.push(input[0].title)
       input.shift()
-      continue
-    } else {
-      console.log('---- in 2.2')
-      let isCheckingStack = true
-      while (isCheckingStack) {
-        console.log('----~ in 2.2while')
-        if (stack.length !== 0 && priorities[stack[0]].stack >= priorities[input[0]].compare) {
-          console.log('------ in 2.2.1')
-          output.push(stack.shift()) // stack[0] -> output, repeat this part
+    }
+    // 2) operations
+    else if (isInPriorities(input[0].title, priorities) && stack.length !== 0) {
+      console.log('current token: ' + input[0].title)
+      console.log('input')
+      console.log(input)
+      let stackOut = []
+      for (let i in stack) stackOut[i] = stack[i].title
+      console.log(stackOut)
+      
+      while (stack.length !== 0) {
+        console.log('current token: ' + input[0].title)
+
+        // if
+
+        // for
+
+        if (input[0].title === ')') {
+          while (stack[stack.length - 1].title !== '(') {
+            let stackUnit = stack.pop()
+            poliz.push(stackUnit.title)
+          }
+          stack.pop()
+          input.shift()
+          break
+        }
+
+        // if (input[0].title === '\n') {
+        // } else 
+        else if (stack.length !== 0 &&
+            priorities[stack[stack.length - 1].title].stack >= priorities[input[0].title].compare) {
+          let stackItem = stack.pop()
+          poliz.push(stackItem.title)
         } else {
-          console.log('------ in 2.2.2')
-          stack.unshift(input.shift()) // IO -> stack
-          isCheckingStack = false
+          stack.push(input.shift())
+          break
         }
       }
     }
-
-    // console.log(operationLexem)
-    // console.log(stack)
-    // console.log(output)
-
-    // if stack is empty
-    if (stack.length === 0) {
-      console.log('-- in 3')
-      stack.unshift(input.shift()) // IO -> stack
+    // 3) Empty stack
+    else if (isInPriorities(input[0].title, priorities) && stack.length === 0) {
+      if (input[0].title === '\n') {
+        input.shift()
+      } else {
+        stack.push(input.shift())
+      }
+    }
+    // filter through not needed symbols (e.g., '{', '}', ...)
+    else {
+      input.shift()
     }
   }
 
-  // if input is empty
+  // 4) Empty input
   while (stack.length !== 0) {
-    console.log('-- in 4')
-    output.push(stack.shift()) // SO -> output
+    let stackItem = stack.pop()
+    poliz.push(stackItem.title) // SO -> poliz
   }
     
-  pushOutputTable(outputTable, '', stack, output)
+  pushOutputTable(outputTable, '', stack, poliz)
 }
 
-
-
-
-
-
-
-
-
-
-
-
-// main parser function
-// let parser = function(uprisingRelationTable, rulesArray) {
-//   // Preparation
-//   let counter = -1 // special counter for "{"
-//   let syntaxTable = [] // step-by-step output table
-//   let mainRelation = '' // main relation sign
-//   let poliz = [] // poliz array of string values
-
-//   let lexemDictInversed = {} // inversed lexemDictionary
-//   Object.keys(lexemDictionary).forEach(key => (lexemDictInversed[lexemDictionary[key]] = key))
-
-//   // add special values to lexems
-//   for (let lexem of lexemTable) {
-//     if (lexem.title === '\n') lexem.title = '\\n' // adjusting \n
-    
-//     if (lexem.code === 100) lexem.value = 'IDN'
-//     else if (lexem.code === 101) lexem.value = 'CON'
-//     else if (lexem.code === 102) lexem.value = 'LAB'
-//     else lexem.value = lexem.title
-//   }
-
-//   // limit lexems via # at start and end
-//   let start = new Lexeme(null, '#', null, null, null, null, null)
-//   start.value = '#'
-//   let end = new Lexeme(null, '#', null, null, null, null, null)
-//   end.value = '#'
-//   lexemTable = [start, ...lexemTable, end]
-
-//   // RHS row of program words ['', '', ...]
-//   let programInput = []
-//   for (let i in lexemTable) programInput[i] = lexemTable[i].title
-//   programInput.shift() // remove first '#'
-
-//   // LHS stack of titles ['', '', ...]
-//   let stack = [lexemTable.shift()]
-
-//   // output
-//   debug(lexemTable)
-//   debug(programInput)
-//   debug(stack)
-//   debug(grammar)
-//   debug(rulesArray)
-//   // ================================================================================
-
-//     // Parsing
-//     while (stack.length !== 2 || lexemTable.length !== 1) {
-
-//       if (stack[stack.length - 1].value === '\\n' && poliz.length !== 0) {
-//         calculatePoliz(poliz)
-//         poliz = [] // reset the poliz
-//       }
-  
-//       if (stack[stack.length - 1].value === '{') counter++
-
-//       if (stack[stack.length - 1].value === '#') {
-//         mainRelation = '<'
-//         pushSyntaxTable(syntaxTable, stack, mainRelation, programInput, poliz)
-//       }
-      
-//       else if (lexemTable[0].value === '#') mainRelation = '>'
-      
-//       else {
-//         let leftIndex = rulesArray.indexOf(stack[stack.length - 1].value)
-//         let rightIndex = rulesArray.indexOf(lexemTable[0].value)
-//         // debug('in left right indexes are: ' + leftIndex + ' & ' + rightIndex)
-//         mainRelation = uprisingRelationTable[leftIndex][rightIndex]
-//       }
-  
-//       if (stack[stack.length - 1] !== '#') {
-//         pushSyntaxTable(syntaxTable, stack, mainRelation, programInput, poliz)
-//       }
-  
-//       if (mainRelation === '<' || mainRelation === '=') {
-//         let grammarKeys = []
-//         for (let i in grammar) grammarKeys[i] = grammar[i].title
-
-//         if (counter >= 0 && grammarKeys.indexOf('variable_list')) {
-//           for (let lexIndex in grammar)
-//             if (grammar[lexIndex].title === 'variable_list') grammar.splice(lexIndex, 1)
-//         }
-  
-//         stack.push(lexemTable.shift())
-//         programInput.shift()
-//       }
-
-
-//       else if (mainRelation === '>') {
-//         let base = [] // accumulate the base in stack before excahnge
-//         let stackIndex = 0 // general stack index
-//         let gramIndex = 0 // general grammar index
-//         let ruleVariant  = '' // some grammar rule from all RHS variants
-
-//         // select the base from stack
-//         for (stackIndex = stack.length - 1; stackIndex > 0; stackIndex--) {
-//         // for (i = stack.length - 1; i > 0; i--) {
-//           if (stack[stackIndex - 1].value === '#') {
-//             base = stack.slice(stackIndex, stack.length)
-//             for (let i in base) base[i] = base[i].value
-//             break
-//           } 
-          
-//           else {
-//             let stackLeftIndex = rulesArray.indexOf(stack[stackIndex - 1].value)
-//             let stackRightIndex = rulesArray.indexOf(stack[stackIndex].value)
-//             let relation = uprisingRelationTable[stackLeftIndex][stackRightIndex]
-//             if (relation === '<') {
-//               base = stack.slice(stackIndex, stack.length)
-//               for (let i in base) base[i] = base[i].value
-//               break
-//             }
-//           }
-//         }
-
-//         // all LHS values of the grammar
-//         let rules = []
-//         grammar.forEach((el, i) => rules[i] = el.title)
-
-//         // find RHS that is equal to possible base and wrap it
-//         for (gramIndex in grammar) {
-//           for (ruleVariant of grammar[gramIndex].statements) {
-//             ruleVariant = trimTerminalSingleQuotes(ruleVariant)
-//             if (base.join(' ') === ruleVariant) {
-//               let ruleLHS = rules[gramIndex]
-              
-//               // fill the poliz
-//               poliz.push(getPoliz(base, ruleLHS, stack[stack.length - 1].title, false))
-//               if (poliz[poliz.length - 1] === '') poliz.splice(-1)
-
-//               // remove selected base from stack
-//               stack.splice(stackIndex)
-
-//               // add current LHS rule title to stack
-//               let ruleLexem = new Lexeme(null, ruleLHS, null, null, null, null, null)
-//               ruleLexem.value = ruleLHS
-//               stack.push(ruleLexem)
-
-//               if (lexemTable[0].value === '#') {
-//                 pushSyntaxTable(syntaxTable, stack, mainRelation, programInput, poliz)
-//               }
-
-//               break
-//             }
-          
-//           }
-//           if (base.join(' ') === ruleVariant) break
-//         }
-
-//         if (base.join(' ') !== ruleVariant) {
-//           displayParserError(`Incorrect end of program on ${stack[stack.length - 1].title}`, lexemTable)
-//           break
-//         }
-
-//       } else {
-//         displayParserError(`No table relation found for: ${stack[stack.length - 1].value} and ${lexemTable[0].value}`,lexemTable)
-//         break
-//       }
-//     }
-  
-//     return syntaxTable
-//   }
-
-
-
-// function getPoliz(base, rule, returnValue, flag = false) {
-//   base = base.join(' ')
-//   console.log('in getPoliz()-- base: ' + base + ' | rule: ' + rule)
-
-//   if (flag) return (-1 * float(returnValue)).toString()
-
-//   else if (base === 'expression + term1' && rule === 'expression') return '+'
-//   else if (base === 'expression - term1' && rule === 'expression') return '-'
-//   else if (base === '- term1' && rule === 'expression') return '@'
-//   else if (base === 'term * factor1' && rule === 'term') return '*'
-//   else if (base === 'term / factor1' && rule === 'term') return '/'
-//   else if (base === 'IDN' && rule === 'factor') return returnValue
-//   else if (base === 'CON' && rule === 'factor') return returnValue
-//   else return ''
-// }
-
-// // change to floats when done
-// function calculatePoliz(poliz) {
-//   let stackPoliz = []
-//   let tmp
-
-//   while (poliz.length !== 0) {
-//     if (poliz[0].match(/^[0-9]\d*(\.\d+)?$/)) {
-//       stackPoliz.push(poliz.shift())
-//     }
-    
-//     else if (poliz[0].indexOf(['+', '-', '*', '/'] !== -1)) {
-//       if (poliz[0] === '+')
-//         tmp = float(stackPoliz[-2]) + float(stackPoliz[-1])
-//       else if (poliz[0] === '-')
-//         tmp = float(stackPoliz[-2]) - float(stackPoliz[-1])
-//       else if (poliz[0] === '*')
-//         tmp = float(stackPoliz[-2]) * float(stackPoliz[-1])
-//       else
-//         tmp = float(stackPoliz[-2]) / float(stackPoliz[-1])
-
-//       stackPoliz.splice(stackPoliz.length - 2, 2, tmp)
-//       poliz.shift()
-//     } else if (poliz[0] === '@') {
-//       tmp = float(stackPoliz[stackPoliz.length - 1]) * -1
-//       stackPoliz.splice(-1, 1, tmp)
-//       poliz.shift()
-//     }
-//   }
-
-//   console.log('Expression = ' + stackPoliz[0].toString())
-// }
 
 
 
@@ -346,10 +145,12 @@ function isDefined(value) {
   return (value !== null && value !== undefined)
 }
 
-// pushing to output Output Table
+// pushing to Output Poliz Table
 function pushOutputTable(tab, operation, stack, poliz) {
   // symbol (current) | stack (full) | poliz (current)
-  tab.push([operation, stack.join(' '), poliz.join(' ')])
+  let stackOutput = []
+  for (let i in stack) stackOutput[i] = stack[i].title
+  tab.push([operation, stackOutput.join(' '), poliz.join(' ')])
 }
 
 // easy debug

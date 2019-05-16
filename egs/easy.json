@@ -156,6 +156,33 @@
   },
   {
     "number": 18,
+    "title": "(",
+    "row": 2,
+    "code": 28,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 19,
+    "title": "7",
+    "row": 2,
+    "code": 101,
+    "idCode": null,
+    "constCode": 4,
+    "labelCode": null
+  },
+  {
+    "number": 20,
+    "title": "/",
+    "row": 2,
+    "code": 27,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 21,
     "title": "4",
     "row": 2,
     "code": 101,
@@ -164,7 +191,7 @@
     "labelCode": null
   },
   {
-    "number": 19,
+    "number": 22,
     "title": ")",
     "row": 2,
     "code": 29,
@@ -173,7 +200,52 @@
     "labelCode": null
   },
   {
-    "number": 20,
+    "number": 23,
+    "title": ")",
+    "row": 2,
+    "code": 29,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 24,
+    "title": "*",
+    "row": 2,
+    "code": 26,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 25,
+    "title": "1",
+    "row": 2,
+    "code": 101,
+    "idCode": null,
+    "constCode": 5,
+    "labelCode": null
+  },
+  {
+    "number": 26,
+    "title": "+",
+    "row": 2,
+    "code": 24,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 27,
+    "title": "9",
+    "row": 2,
+    "code": 101,
+    "idCode": null,
+    "constCode": 6,
+    "labelCode": null
+  },
+  {
+    "number": 28,
     "title": "\n",
     "row": 3,
     "code": 30,
@@ -182,7 +254,7 @@
     "labelCode": null
   },
   {
-    "number": 21,
+    "number": 29,
     "title": "}",
     "row": 3,
     "code": 13,
@@ -191,7 +263,7 @@
     "labelCode": null
   },
   {
-    "number": 22,
+    "number": 30,
     "title": "\n",
     "row": 4,
     "code": 30,

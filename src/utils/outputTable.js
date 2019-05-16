@@ -29,11 +29,10 @@ export default function lexemOutput(
     for (let j = 0; j < keys.length; j++) {
       output += '<td>'
       let value = table[i][keys[j]]
-      if (value === null || value === undefined) {
-        value = '--'
-      } else if (value === '\n') {
-        value = '\\n'
-      }
+
+      value = value.replace(/\n/g, '\\n')
+      if (value === null || value === undefined) value = '--'
+
       output += value
       output += '</td>'
     }
