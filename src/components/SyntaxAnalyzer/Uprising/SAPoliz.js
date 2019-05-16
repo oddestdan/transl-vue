@@ -55,12 +55,11 @@ let dijkstra = function(lexems, stack, input, poliz, outputTable) {
       isLoop = []
 
   while (input.length !== 0) {
-    console.log('   --- input[0]: ' + input[0].title)
-    console.log('   === stack: ')
+    console.log('> current input[0] and stack: \'' + input[0].title + '\'')
     let stackOut = []
     for (let i in stack) stackOut[i] = stack[i].title
     console.log(stackOut)
-    console.log('   === ======================')
+    console.log(' ===================================')
 
     pushOutputTable(outputTable, input[0].title, stack, poliz)
 
@@ -71,21 +70,20 @@ let dijkstra = function(lexems, stack, input, poliz, outputTable) {
     }
     // 2) operations
     else if (isInPriorities(input[0].title, priorities) && stack.length !== 0) {
-      console.log('current token: ' + input[0].title)
-      console.log('input')
-      console.log(input)
+      console.log('>> current input[0] and stack: \'' + input[0].title + '\'')
       let stackOut = []
       for (let i in stack) stackOut[i] = stack[i].title
       console.log(stackOut)
       
       while (stack.length !== 0) {
-        console.log('current token: ' + input[0].title)
+        console.log('>>> current token (input[0]): ' + input[0].title)
 
         // if
 
         // for
 
         if (input[0].title === ')') {
+          console.log('Processing ()')
           while (stack[stack.length - 1].title !== '(') {
             let stackUnit = stack.pop()
             poliz.push(stackUnit.title)
@@ -94,14 +92,45 @@ let dijkstra = function(lexems, stack, input, poliz, outputTable) {
           input.shift()
           break
         }
-
-        // if (input[0].title === '\n') {
-        // } else 
+        else if (input[0].title === 'iput') {
+          console.log('Processing iput <<')
+          stack.push(input.shift())
+          poliz.push('IPUT')
+          break
+        }
+        else if (input[0].title === 'oput') {
+          console.log('Processing oput >>')
+          stack.push(input.shift())
+          poliz.push('OPUT')
+          break
+        }
+        else if (input[0].title === '\n') {
+          console.log('Processing \\n (stack[n-1] and input[0])...')
+          console.log(stack[stack.length - 1])
+          console.log(input[0])
+          while (stack.length !== 0 && stack[stack.length - 1].row === input[0].row - 1) {
+            if (stack[stack.length - 1].title === 'oput') {
+              console.log('Processing end of output')
+              poliz.push('oEND')
+              stack.pop()
+            } else if (stack[stack.length - 1].title === 'iput') {
+              console.log('Processing end of input')
+              poliz.push('iEND')
+              stack.pop()
+            } else {
+              let stackUnit = stack.pop()
+              poliz.push(stackUnit.title)
+            }
+          }
+          input.unshift()
+          break
+        }
         else if (stack.length !== 0 &&
             priorities[stack[stack.length - 1].title].stack >= priorities[input[0].title].compare) {
           let stackItem = stack.pop()
           poliz.push(stackItem.title)
-        } else {
+        }
+        else {
           stack.push(input.shift())
           break
         }
@@ -111,6 +140,10 @@ let dijkstra = function(lexems, stack, input, poliz, outputTable) {
     else if (isInPriorities(input[0].title, priorities) && stack.length === 0) {
       if (input[0].title === '\n') {
         input.shift()
+      } else if (input[0].title === 'iput' || input[0].title === 'oput') {
+        console.log('Processing start of iput/oput')
+        poliz.push(input[0].title)
+        stack.push(input.shift())
       } else {
         stack.push(input.shift())
       }
