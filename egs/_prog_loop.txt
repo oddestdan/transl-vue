@@ -1,0 +1,4 @@
+int i
+{
+  for i = 0 by 1 while i <= 9 do oput >> i
+}

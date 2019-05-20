@@ -1,0 +1,12 @@
+int i, j
+fixed fCon
+label LB
+{
+  i = - 5 + 4 * 6 (- 9 + 8)
+  j = 7 + (1 * 2) - 3
+  if j > 10 then goto LB
+  iput << i
+  goto LB
+  oput >> fCon >> 3.1E-1
+  @LB
+}

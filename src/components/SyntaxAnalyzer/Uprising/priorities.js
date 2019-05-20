@@ -18,7 +18,7 @@ export let priorities = {
 
   '=':      { stack: 2, compare: 11 },
   'int':    { stack: 2, compare: 10 },
-  'float':  { stack: 2, compare: 10 },
+  'fixed':  { stack: 2, compare: 10 },
   'label':  { stack: 2, compare: 10 },
 
   '<':      { stack: 3, compare: 3 },

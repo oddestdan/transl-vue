@@ -1,0 +1,7 @@
+int i
+label LB
+{
+  if i > 5 then goto LB
+  i = 2
+  @LB
+}
