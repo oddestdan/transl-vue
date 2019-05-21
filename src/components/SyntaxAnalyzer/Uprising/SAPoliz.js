@@ -31,9 +31,6 @@ function addValuesToLexems(lexems) {
 
 // main parser function
 let parser = function(lexems, outputTable) {
-  console.log('initial lexems')
-  console.log(lexems)
-
   let stack = [],
       input = [],
       poliz = []
@@ -41,28 +38,18 @@ let parser = function(lexems, outputTable) {
   for (let i in lexems) {
     input[i] = lexems[i]
   }
-  dijkstra(lexems, stack, input, poliz, outputTable)
+  dijkstra(stack, input, poliz, outputTable)
 }
 
 // dijkstra algorithm
-let dijkstra = function(lexems, stack, input, poliz, outputTable) {
+let dijkstra = function(stack, input, poliz, outputTable) {
   let tags = []
 
   // for loop helpers
-  let loopVariable = '',
-      loopFeature = 0,
-      loopHelp = [],
-      isLoop = []
+  let loopVar = ''
 
   while (input.length !== 0) {
-    console.log('> current input[0] and stack: \'' + input[0].title + '\'')
-    let stackOut = []
-    for (let i in stack) stackOut[i] = stack[i].title
-    console.log(stackOut)
-    console.log(' ===================================')
-
     pushOutputTable(outputTable, input[0].title, stack, poliz)
-
     // 1) IDN or CON [or LAB]
     if (input[0].value !== null) {
       poliz.push(input[0].title)
@@ -70,29 +57,20 @@ let dijkstra = function(lexems, stack, input, poliz, outputTable) {
     }
     // 2) operations
     else if (isInPriorities(input[0].title, priorities) && stack.length !== 0) {
-      console.log('>> current input[0] and stack: \'' + input[0].title + '\'')
-      let stackOut = []
-      for (let i in stack) stackOut[i] = stack[i].title
-      console.log(stackOut)
-      
       while (stack.length !== 0) {
-        console.log('>>> current token (input[0]): ' + input[0].title)
-        console.log('>>> tags: ' + tags)
-
         // uncond statement
         if (input[0].title === 'goto') {
           console.log('Processing uncond statement')
           input.shift()
           poliz.push('m_' + input.shift().title)
-          poliz.push('UPH')
+          poliz.push('BP')
           if (stack[stack.length - 1].title === 'if') {
             stack.pop() // popping off the ending 'm_' tag for cond statement
-            poliz.push(tags.shift())
+            poliz.push(tags[tags.length - 1].title)
             poliz.push(':')
           }
           break
         }
-
         // cond statement
         else if (input[0].title === 'then') {
           console.log('Processing middle cond statement')
@@ -102,19 +80,15 @@ let dijkstra = function(lexems, stack, input, poliz, outputTable) {
           for (; indexIf >= 0; indexIf--)
             if (stack[indexIf].title === 'if') break
 
-          let i = stack.length - 1 // 2 - 1 =  1
+          let i = stack.length - 1
           while (i-- > indexIf) // while stack[i] is not 'if'
             poliz.push(stack.pop().title)
 
-          tags.unshift('m_')
-          tags[0] = '' + tags[0] + (tags.length.toString() - 1)
-          poliz.push(tags[0])
+          tags.push({ title: `m_${tags.length}`, code: 200 })
+          poliz.push(tags[tags.length - 1].title)
           poliz.push('UPH')
           break
         }
-
-        // loop
-
         // ()
         else if (input[0].title === ')') {
           console.log('Processing ()')
@@ -141,25 +115,83 @@ let dijkstra = function(lexems, stack, input, poliz, outputTable) {
         // wrapping \n
         else if (input[0].title === '\n') {
           console.log('Processing wrapping \\n')
-          while (stack.length !== 0 && stack[stack.length - 1].row === input[0].row - 1) {
-            if (stack[stack.length - 1].title === 'oput') {
+          while (stack.length !== 0
+            && stack[stack.length - 1].row === input[0].row - 1) {
+
+            if (stack.length >= 4 && stack[stack.length - 4].title === 'for') {
+              console.log('Processing end of loop')
+              poliz.push(stack[stack.length - 3].title) // m_0
+              poliz.push('BP') // BP
+              poliz.push(stack[stack.length - 1].title) // m_2
+              poliz.push(':')
+
+              // stack.splice(stack.length - 4, 4) // remove: for m1 m2 m3
+              for (let i = 0; i < 4; i++)
+                stack.pop()
+            }
+            else if (stack[stack.length - 1].title === 'oput') {
               console.log('Processing end of output')
               poliz.push('oEND')
               stack.pop()
-            } else if (stack[stack.length - 1].title === 'iput') {
+            }
+            else if (stack[stack.length - 1].title === 'iput') {
               console.log('Processing end of input')
               poliz.push('iEND')
               stack.pop()
-            } else {
+            }
+            else {
+              console.log('Processing else in wrapping \\n')
               let stackUnit = stack.pop()
               poliz.push(stackUnit.title)
             }
           }
+
           input.unshift()
           break
         }
-        else if (stack.length !== 0 &&
-            priorities[stack[stack.length - 1].title].stack >= priorities[input[0].title].compare) {
+        // loop
+        else if (stack.length >= 4 && stack[stack.length - 4].title === 'for') {
+          console.log('Processing for loop | stack is full')
+          if (input[0].title === '=') {
+            let tl = tags.length
+
+            // loopVar = IDN // CON --> i 0 =
+            stack.push(input.shift()) // = -> stack
+            poliz.push(input.shift().title) // IDN // CON
+            poliz.push(stack.pop().title)   // = <- stack
+
+            // by --> r0 1 = m0 : r1
+            input.shift() // by
+            // loopHelp.push(`r_${loopHelp.length - 1}`) // r_0
+            poliz.push(...['r_0', '1', '=', tags[tl - 3].title, ':', 'r_1'])
+
+            // step --> step
+            poliz.push(input.shift().title) // step
+
+            // while --> = r0 0 = m1 UPH lVar lVar r1 + = m1 : r0 0 =
+            input.shift() // while
+            poliz.push(...['=', 'r_0', '0', '=', tags[tl - 2].title, 'UPH'])
+            poliz.push(...[loopVar, loopVar, 'r_1', '+', '='])
+            poliz.push(...[tags[tl - 2].title, ':', 'r_0', '0', '='])
+
+            // relation --> poliz(relation)
+            poliz.push(input.shift().title) // 1st
+            stack.push(input.shift()) // sign -> stack
+            poliz.push(input.shift().title) // 2nd
+            poliz.push(stack.pop().title)   // sign <- stack
+
+            // do --> m2 UPH
+            input.shift() // do
+            poliz.push(...[tags[tl - 1].title, 'UPH'])
+
+            // operation --> poliz(operation)
+            // .....
+          }
+        }
+        else if (stack.length !== 0
+          && stack[stack.length - 1].code !== 200 // ! poliz tag 
+          && priorities[stack[stack.length - 1].title].stack >= priorities[input[0].title].compare) {
+          
           console.log(stack[stack.length - 1].title + ' is >= than ' + input[0].title)
           console.log('So we are outputting to poliz from stack')
           poliz.push(stack.pop().title)
@@ -176,7 +208,6 @@ let dijkstra = function(lexems, stack, input, poliz, outputTable) {
       if (input[0].title === '\n') {
         input.shift()
       } 
-      
       // label
       else if (input[0].title === '@') {
         console.log('Processing label')
@@ -189,18 +220,31 @@ let dijkstra = function(lexems, stack, input, poliz, outputTable) {
         console.log('Processing uncond statement | no stack')
         input.shift()
         poliz.push('m_' + input.shift().title)
-        poliz.push('UPH')
+        poliz.push('BP')
       }
-
       // cond statement
       else if (input[0].title === 'if') {
         console.log('Processing start of cond statement')
         stack.push(input.shift())
       }
-
       // loop
+      else if (input[0].title === 'for') {
+        console.log('Processing start of loop')
+        stack.push(input.shift())
 
+        let tl = tags.length
+        for (let i = tl; i < tl + 3; i++) {
+          tags[i] = {
+            title: `m_${i}`,
+            code: 200,
+            row: stack[stack.length - 1].row
+          }
+          stack.push(tags[i])
+        }
 
+        loopVar = input[0].title
+        poliz.push(input.shift().title) // loopVar
+      }
       // input / output
       else if (input[0].title === 'iput' || input[0].title === 'oput') {
         console.log('Processing start of iput/oput')
@@ -208,6 +252,7 @@ let dijkstra = function(lexems, stack, input, poliz, outputTable) {
         stack.push(input.shift())
       } 
       else {
+        console.log('Processing something else | stack is empty')
         stack.push(input.shift())
       }
     }
