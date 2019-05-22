@@ -48,9 +48,10 @@ let dijkstra = function(stack, input, poliz, outputTable) {
   let prevInput
 
   while (input.length !== 0) {
-    pushOutputTable(outputTable, input[0].title, stack, poliz)
     prevInput = input[0]
-    console.log(`${prevInput.title} <==> ${input[0].title}`)
+
+    pushOutputTable(outputTable, input[0].title, stack, poliz)
+
     // 1) IDN or CON [or LAB]
     if (input[0].value !== null) {
       poliz.push(input[0].title)
