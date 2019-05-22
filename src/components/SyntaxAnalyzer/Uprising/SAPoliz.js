@@ -44,12 +44,13 @@ let parser = function(lexems, outputTable) {
 // dijkstra algorithm
 let dijkstra = function(stack, input, poliz, outputTable) {
   let tags = []
-
-  // for loop helpers
   let loopVar = ''
+  let prevInput
 
   while (input.length !== 0) {
     pushOutputTable(outputTable, input[0].title, stack, poliz)
+    prevInput = input[0]
+    console.log(`${prevInput.title} <==> ${input[0].title}`)
     // 1) IDN or CON [or LAB]
     if (input[0].value !== null) {
       poliz.push(input[0].title)
@@ -58,8 +59,16 @@ let dijkstra = function(stack, input, poliz, outputTable) {
     // 2) operations
     else if (isInPriorities(input[0].title, priorities) && stack.length !== 0) {
       while (stack.length !== 0) {
+        // unary minus
+        if (input[0].title === '-') {
+          if (prevInput.value !== 'IDN' &&
+              prevInput.value !== 'CON' &&
+              prevInput.title !== ')') {
+            input[0].title = '@'
+          }
+        }
         // uncond statement
-        if (input[0].title === 'goto') {
+        else if (input[0].title === 'goto') {
           console.log('Processing uncond statement')
           input.shift()
           poliz.push('m_' + input.shift().title)
@@ -250,7 +259,7 @@ let dijkstra = function(stack, input, poliz, outputTable) {
         console.log('Processing start of iput/oput')
         poliz.push(input[0].title)
         stack.push(input.shift())
-      } 
+      }
       else {
         console.log('Processing something else | stack is empty')
         stack.push(input.shift())
@@ -258,6 +267,16 @@ let dijkstra = function(stack, input, poliz, outputTable) {
     }
     // filter through not needed symbols (e.g., '{', '}', ...)
     else {
+      // end of declarations EoDecl
+      if (input[0].title === '{') {
+        console.log('Processing end of declaration block')
+        poliz.push('EoDecl')
+      }
+      // end of operations EoOper
+      else if (input[0].title === '}') {
+        console.log('Processing end of operation block')
+        poliz.push('EoOper')
+      }
       input.shift()
     }
   }
