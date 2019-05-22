@@ -8,10 +8,11 @@ export default function parserUprising(lexemsJSON) {
   addValuesToLexems(lexems)
 
   let outputTable = []
-  parser(lexems, outputTable)
+  let poliz = []
+  parser(lexems, poliz, outputTable)
 
   outputTable = mapTableToObjectWithKeys(outputTable, ['operation', 'stack', 'poliz'])
-  return outputTable // TODO: can be shortened
+  return [poliz, outputTable]
 }
 
 // add extra 'value' property to lexems for poliz algorithm 
@@ -30,10 +31,9 @@ function addValuesToLexems(lexems) {
 }
 
 // main parser function
-let parser = function(lexems, outputTable) {
+let parser = function(lexems, poliz, outputTable) {
   let stack = [],
-      input = [],
-      poliz = []
+      input = []
 
   for (let i in lexems) {
     input[i] = lexems[i]

@@ -80,11 +80,14 @@ export default {
       programInput: '',
       lexems: [],
       relationTable: [],
+      polizTable: [],
+      poliz: [],
       rules: [],
       
       selectedParser: 'Poliz'
     }
   },
+
   methods: {
     resetAll() {
       this.programInput = ''
@@ -117,6 +120,7 @@ export default {
       alert('Everything has been reset')
       console.clear()
     },
+
     lexemAnalyze() {
       this.lexems = [] // reset
       lexParser(this.programInput)
@@ -125,6 +129,7 @@ export default {
       console.log('Program processed. Lexems:')
       console.log(this.lexems)
     },
+
     saveLexems() {
       // Download as a JSON file (WebAPI)
       let a = document.createElement('a')
@@ -134,13 +139,16 @@ export default {
       a.download = val ? val + '.json' : 'lexems.json'
       a.click()
     },
+
     outputLexemTable() {
       outputTable(this.lexems, 'lexemTableOutput', 'json')
     },
+
     closeLexemTable() {
       let el = document.getElementById('lexemTableOutput')
       el.innerHTML = ''
     },
+
     parse() {
       switch (this.selectedParser) {
         case 'Recursive':
@@ -169,26 +177,32 @@ export default {
           )
           break
         case 'Poliz':
-          let table = parserPoliz(this.lexems)
+          // let table = parserPoliz(this.lexems)
+          [this.poliz, this.polizTable] = parserPoliz(this.lexems)
           outputTable(
-            table,
+            this.polizTable,
             'syntaxTableOutput',
             'text', true
           )
+          console.log('    POLIZ')
+          console.log(this.poliz)
           break
         default:
           parserRecursive(this.lexems)
           break
       }
     },
+
     setRelations() {
       [this.relationTable, this.rules] = relations(this.rules)
       outputUprisingTable(this.relationTable, this.rules, 'relationTableOutput')
       // let win = window.open('rel', '_blank')
       // win.focus()
-    },
+    }
   },
+
   computed: {},
+
   components: {
     TextReader
   }
