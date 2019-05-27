@@ -5,12 +5,22 @@
 
     <div class="centerColContainer">
       <div class="textContainer">
-        <h1>Program Loader</h1>
+        <h2>Program</h2>
+        <textarea rows="13" v-model="temporaryProgram"></textarea>
+        <hr>
+        <h2>Poliz</h2>
+        <textarea rows="13" v-model="poliz.join(' ')"></textarea>
+      </div>
+    </div>
+
+    <div class="centerColContainer">
+      <div class="textContainer">
+        <h2>Program Loader</h2>
         <hr>
 
         <text-reader @load="programInput = $event"></text-reader>
         <br>
-        <textarea rows="10" v-model="programInput"></textarea>
+        <textarea rows="13" v-model="programInput"></textarea>
       </div>
     </div>
 
@@ -23,7 +33,7 @@
 
     <div class="splitter centerRowContainer">
       <div class="centerColContainer">
-        <h1>Syntax Parser</h1>
+        <h2>Syntax Parser</h2>
         <select
         name="parserSelect"
         id="parserSelect"
@@ -39,7 +49,7 @@
       </div>
 
       <div class="textContainer">
-        <h1>JSON Lexem Loader</h1>
+        <h2>JSON Lexem Loader</h2>
         <text-reader @load="lexems = $event"></text-reader>
         <br>
         <textarea rows="10" v-model="lexems"></textarea>
@@ -53,6 +63,11 @@
     <div class="buttonContainer">
       <button @click="setRelations" type="button" id="setRelationsButton">Set relations</button>
     </div>
+
+    <div class="buttonContainer">
+      <button @click="runProgram" type="button" id="runProgram">Run</button>
+    </div>
+
     <div id="lexemTableOutput"></div>
     <div id="stateTableOutput"></div>
     <div id="syntaxTableOutput"></div>
@@ -62,27 +77,63 @@
 
 <script>
 import TextReader from '@/components/TextReader.vue'
-import {
-  lexParser,
-  lexemTableJSON
-} from '@/components/LexemAnalyzer/LexemAnalyzer.js'
+// import {
+  // lexParser,
+  // lexemTableJSON
+// } from '@/components/LexemAnalyzer/LexemAnalyzer.js'
+import lexParser from '@/components/LexemAnalyzer/LexemAnalyzer.js'
 import { parserRecursive } from '@/components/SyntaxAnalyzer/Recursive/SARecursive.js'
-import { parserMPA, stateTable } from '@/components/SyntaxAnalyzer/MPA/SAMPA.js'
+import { parserMPA } from '@/components/SyntaxAnalyzer/MPA/SAMPA.js'
 import outputTable from '@/utils/outputTable.js'
 import relations from '@/components/SyntaxAnalyzer/Uprising/relations.js'
 import outputUprisingTable from '@/utils/outputUprisingTable.js'
 import parserUprising from '@/components/SyntaxAnalyzer/Uprising/SAUprising.js'
 import parserArithmPoliz from '@/components/SyntaxAnalyzer/Uprising/SAPolizArithm.js'
 import parserPoliz from '@/components/SyntaxAnalyzer/Uprising/SAPoliz.js'
+import run from '@/components/SyntaxAnalyzer/Uprising/run.js'
+
+let testingProgram = `int i, j
+fixed fCon
+label LB
+{
+  i = - 5 + 9 * (- 7 + 8)
+  // for i = 0 by 1 while i <= 9 do oput >> i
+  // if j > 10 then goto LB
+  oput >> i
+  iput << j
+  // goto LB
+  // oput >> fCon >> 3.1E-1
+  oput >> j >> 3.1E-1
+  @LB
+}`
+
 export default {
   data() {
     return {
       programInput: '',
       lexems: [],
       relationTable: [],
-      polizTable: [],
-      poliz: [],
       rules: [],
+      polizTable: [],
+
+      temporaryProgram: testingProgram,
+      poliz: [
+        "i", "j", "int", "fCon", "fixed", "LB", "label",
+        "EoDecl",
+        // "i", "5", "@", "9", "7", "@", "8", "+", "*", "+", "=",
+
+        // "i", "0", "=", "r_0", "1", "=", "m_0", ":", "r_1", "1", "=", "r_0", "0",
+          // "=", "m_1", "UPH", "i", "i", "r_1", "+", "=", "m_1", ":", "r_0", "0", "=",
+          // "i", "9", "<=", "m_2", "UPH", "OPUT", "i", "oEND", "m_0", "BP", "m_2", ":",
+        // "j", "10", ">", "m_3", "UPH", "m_LB", "BP", "m_3", ":", 
+
+        "OPUT", "i", "oEND", 
+        "IPUT", "j", "iEND", 
+        // "m_LB", "BP",
+        "OPUT", "j", "3.1E-1", "oEND", 
+        // "m_LB", ":",
+        "EoOper"
+      ],
       
       selectedParser: 'Poliz'
     }
@@ -122,10 +173,9 @@ export default {
     },
 
     lexemAnalyze() {
-      this.lexems = [] // reset
-      lexParser(this.programInput)
-      this.lexems = lexemTableJSON
+      this.lexems = lexParser(this.programInput)
 
+      alert('Program lexems processed!')
       console.log('Program processed. Lexems:')
       console.log(this.lexems)
     },
@@ -196,12 +246,18 @@ export default {
     setRelations() {
       [this.relationTable, this.rules] = relations(this.rules)
       outputUprisingTable(this.relationTable, this.rules, 'relationTableOutput')
-      // let win = window.open('rel', '_blank')
-      // win.focus()
+      
+      let win = window.open('rel', '_blank')
+      win.focus()
+    },
+
+    runProgram() {
+      this.lexems = lexParser(this.programInput)
+      
+      // should return a function that does all the work here?
+      run(this.lexems, this.poliz)
     }
   },
-
-  computed: {},
 
   components: {
     TextReader
@@ -210,6 +266,16 @@ export default {
 </script>
 
 <style scoped>
+/* temporary styles */
+.home div:nth-child(3),
+.home div:nth-child(4),
+.home div:nth-child(5),
+.home div:nth-child(6),
+.home div:nth-child(7),
+.home div:nth-child(8) {
+  display: none;
+}
+
 .splitter {
   display: flex;
   flex-direction: row;

@@ -1,5 +1,4 @@
 /* eslint-disable */
-// import Lexeme from '@/components/LexemAnalyzer/Lexeme'
 import { mapTableToObjectWithKeys } from '@/utils/utility'
 import { priorities } from "./priorities";
 

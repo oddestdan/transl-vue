@@ -238,7 +238,7 @@ let resetState = function() {
 }
 
 // Outer loop through each string character
-let lexParser = function(textFileContent) {
+export default function lexParser(textFileContent) {
   for (let i = 0; i < textFileContent.length; i++) {
     cPrev = (i >= 1) ? textFileContent.charAt(i - 1) : ''
 
@@ -273,7 +273,6 @@ let lexParser = function(textFileContent) {
   }
 
   lexemTableJSON = JSON.stringify(lexemTable, null, 2)
-  alert('Lexems Processed!')
 
   // Output to console
   if (debugMode) {
@@ -292,6 +291,8 @@ let lexParser = function(textFileContent) {
     console.log('Output Table (of <Lexeme> Objects [' + lexCount + ']):\n')
     console.log(lexemTable)
   }
+
+  return lexemTableJSON
 }
 
 // Converting arrays to tables
@@ -299,4 +300,4 @@ let idTable = convertArrayToTable(idArray)
 let constTable = convertArrayToTable(constArray)
 let labelTable = convertArrayToTable(labelArray)
 
-export { lexParser, lexemTableJSON }
+// export { lexParser, lexemTableJSON }
