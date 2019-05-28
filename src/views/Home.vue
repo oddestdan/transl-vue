@@ -120,17 +120,18 @@ export default {
       poliz: [
         "i", "j", "int", "fCon", "fixed", "LB", "label",
         "EoDecl",
-        // "i", "5", "@", "9", "7", "@", "8", "+", "*", "+", "=",
+        "j", "4", "=",
+        "i", "j", "@", "9", "7", "@", "8", "+", "*", "+", "=",
 
         // "i", "0", "=", "r_0", "1", "=", "m_0", ":", "r_1", "1", "=", "r_0", "0",
           // "=", "m_1", "UPH", "i", "i", "r_1", "+", "=", "m_1", ":", "r_0", "0", "=",
           // "i", "9", "<=", "m_2", "UPH", "OPUT", "i", "oEND", "m_0", "BP", "m_2", ":",
         // "j", "10", ">", "m_3", "UPH", "m_LB", "BP", "m_3", ":", 
 
-        "OPUT", "i", "oEND", 
-        "IPUT", "j", "iEND", 
+        "OPUT", "i", "oEND",
+        "IPUT", "j", "iEND",
         // "m_LB", "BP",
-        "OPUT", "j", "3.1E-1", "oEND", 
+        "OPUT", "j", "3.1E-1", "oEND",
         // "m_LB", ":",
         "EoOper"
       ],
@@ -176,7 +177,7 @@ export default {
       this.lexems = lexParser(this.programInput)
 
       alert('Program lexems processed!')
-      console.log('Program processed. Lexems:')
+      console.log('Program processed! Lexems:')
       console.log(this.lexems)
     },
 

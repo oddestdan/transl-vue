@@ -45,20 +45,33 @@ function run(poliz) {
       processOutput(poliz, vars)
     } else {                              // Other operation
       // process arithmetic first
-      
+      if (itemAmongArithmSigns(currentItem)) {
+        processArithmOperation(currentItem, vars, stack)
+      } else if (currentItem === '=') {
+        processAssignment(vars, stack)
+      }
 
       // assignment
 
       // if
 
       // for
+
+      else {
+        if (itemAmongVariables(currentItem, vars))
+          currentItem = checkGetVarValue(currentItem, vars)
+        // (/^\d+$/.test(currentItem))
+        if (!isNaN(currentItem))
+          currentItem = Number.parseInt(currentItem)
+        stack.push(currentItem)
+      }
     }
-
-    // main logic here
-
 
     poliz.shift()
   }
+  
+  console.log('vars')
+  console.log(vars)
 }
 
 
@@ -66,7 +79,7 @@ function pushVariables(varType, stack, vars) {
   while (stack.length !== 0) {
     vars.push({
       title: stack.pop(),
-      value: null,
+      value: undefined,
       type: varType
     })
   }
@@ -80,7 +93,7 @@ function processInput(poliz, vars) {
     if (itemAmongVariables(item, vars)) {
       let v = getVariable(item, vars)
       v.value = prompt('Enter value', '<value>')
-      if (v.value !== null)
+      if (v.value !== undefined)
         log(`Successful input! ${v.title}: ${v.value}`)
       else
         log(`Failed input! ${v.title}: ${v.value}`)
@@ -100,7 +113,7 @@ function processOutput(poliz, vars) {
   while (item !== 'oEND') {
     if (itemAmongVariables(item, vars)) {
       let v = getVariable(item, vars)
-      log(v.value !== null ? v.value : (v.title + ': undefined'))
+      log(v.value !== undefined ? v.value : (v.title + ': undefined'))
       // console.log(`${v.title}: ${v.value}`)
     } else {
       log(item)
@@ -110,6 +123,32 @@ function processOutput(poliz, vars) {
     item = poliz[0]
   }
 }
+
+// TODO: add variable support
+function processArithmOperation(sign, vars, stack) {
+  console.log(' ---- stack')
+  console.log(stack)
+  let ns = stack.length
+
+  if (sign === '+')
+    stack[ns - 2] = stack[ns - 2] + stack.pop()
+  else if (sign === '-')
+    stack[ns - 2] = stack[ns - 2] - stack.pop()
+  else if (sign === '*')
+    stack[ns - 2] = stack[ns - 2] * stack.pop()
+  else if (sign === '/')
+    stack[ns - 2] = stack[ns - 2] / stack.pop()
+  else
+    stack[ns - 1] = - stack[ns - 1]
+}
+
+// TODO: add variable support
+function processAssignment(vars, stack) {
+  let value = stack.pop()
+  let index = getVariableIndex(stack.pop(), vars)
+  vars[index].value = value
+}
+
 
 // Utility functions
 function isVariableType(item) {
@@ -122,9 +161,26 @@ function itemAmongVariables(item, vars) {
   }
   return false
 }
+function itemAmongArithmSigns(sign) {
+  let signs = ['+', '-', '*', '/', '@', '']
+  for (let s of signs)
+    if (s === sign) return true
+  return false
+}
 
-function getVariable(item, vars) {
-  return vars.find(v => v.title === item)
+// push only values to stack (instead of variables)
+function checkGetVarValue(value, vars) {
+  for (let v of vars)
+    if (v.title === value)
+      return (v.value === undefined) ? v.title : v.value
+  return value
+}
+
+function getVariable(title, vars) {
+  return vars.find(v => v.title === title)
+}
+function getVariableIndex(title, vars) {
+  return vars.findIndex(v => v.title === title)
 }
 
 function log(string) {
