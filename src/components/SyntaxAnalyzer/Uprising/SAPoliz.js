@@ -75,8 +75,7 @@ let dijkstra = function(stack, input, poliz, outputTable) {
           poliz.push('BP')
           if (stack[stack.length - 1].title === 'if') {
             stack.pop() // popping off the ending 'm_' tag for cond statement
-            poliz.push(tags[tags.length - 1].title)
-            poliz.push(':')
+            poliz.push(`${tags[tags.length - 1].title}:`)
           }
           break
         }
@@ -131,8 +130,7 @@ let dijkstra = function(stack, input, poliz, outputTable) {
               console.log('Processing end of loop')
               poliz.push(stack[stack.length - 3].title) // m_0
               poliz.push('BP') // BP
-              poliz.push(stack[stack.length - 1].title) // m_2
-              poliz.push(':')
+              poliz.push(`${stack[stack.length - 1].title}:`) // m_2:
 
               // stack.splice(stack.length - 4, 4) // remove: for m1 m2 m3
               for (let i = 0; i < 4; i++)
@@ -172,16 +170,16 @@ let dijkstra = function(stack, input, poliz, outputTable) {
             // by --> r0 1 = m0 : r1
             input.shift() // by
             // loopHelp.push(`r_${loopHelp.length - 1}`) // r_0
-            poliz.push(...['r_0', '1', '=', tags[tl - 3].title, ':', 'r_1'])
+            poliz.push(...['r_0', '1', '=', `${tags[tl - 3].title}:`, 'r_1'])
 
             // step --> step
             poliz.push(input.shift().title) // step
 
             // while --> = r0 0 = m1 UPH lVar lVar r1 + = m1 : r0 0 =
             input.shift() // while
-            poliz.push(...['=', 'r_0', '0', '=', tags[tl - 2].title, 'UPH'])
+            poliz.push(...['=', 'r_0', '0', '==', tags[tl - 2].title, 'UPH'])
             poliz.push(...[loopVar, loopVar, 'r_1', '+', '='])
-            poliz.push(...[tags[tl - 2].title, ':', 'r_0', '0', '='])
+            poliz.push(...[`${tags[tl - 2].title}:`, 'r_0', '0', '='])
 
             // relation --> poliz(relation)
             poliz.push(input.shift().title) // 1st
@@ -221,8 +219,7 @@ let dijkstra = function(stack, input, poliz, outputTable) {
       else if (input[0].title === '@') {
         console.log('Processing label')
         input.shift()
-        poliz.push('m_' + input.shift().title)
-        poliz.push(':')
+        poliz.push(`m_${input.shift().title}:`)
       }
       // uncond statement
       else if (input[0].title === 'goto') {

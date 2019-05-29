@@ -10,56 +10,73 @@ export default function runProgram(lexemsJSON, poliz) {
 function run(poliz) {
   alert('running the program!\n' + poliz.join(' | '))
 
+  const polizCopy = [...poliz]
+
   let stack = []
   let vars = []
-  let cons = []
+  let loopTags = [ { title: 'r_0', value: undefined }, { title: 'r_1', value: undefined } ]
 
   let currentItem = ''
 
 
   // Declaration
   while (currentItem !== 'EoDecl') {
-    currentItem = poliz[0]
+    currentItem = poliz.shift()
     if (isVariableType(currentItem)) {  // Encountered variable type
       pushVariables(currentItem, stack, vars)
     } else {                            // Encountered variable
       stack.push(currentItem)
     }
-    poliz.shift()
   }
+  stack.pop() // remove 'EoDecl'
 
   console.log('vars')
   console.log(vars)
-  console.log('poliz')
-  console.log(poliz)
-  console.log('stack')
-  console.log(stack)
 
   // Operation
-  while (currentItem !== 'EoOper') {
+  // while (currentItem !== 'EoOper') {
+  for (let i = 0; i < 80; i++) {
     currentItem = poliz[0]
 
+    console.log('main stack: ')
+    console.log(stack)
+    console.log('main poliz: ')
+    console.log(poliz)
+    // console.log(`main tag1: v ${loopTags[0].value} | t ${loopTags[0].title}`)
+    // console.log(`main tag1: v ${loopTags[1].value} | t ${loopTags[1].title}`)
+    
     if (currentItem === 'IPUT') {         // Processing input
       processInput(poliz, vars)
     } else if (currentItem === 'OPUT') {  // Processing output
       processOutput(poliz, vars)
     } else {                              // Other operation
-      // process arithmetic first
+      // arithmetic operation
       if (itemAmongArithmSigns(currentItem)) {
-        processArithmOperation(currentItem, vars, stack)
-      } else if (currentItem === '=') {
-        processAssignment(vars, stack)
-      }
-
+        processArithmOperation(currentItem, stack)
+      } 
       // assignment
+      else if (currentItem === '=') {
+        processAss(vars, stack)
+        // processAssignment(vars, stack, loopTags)
+      }
+      // relation
+      else if (itemAmongRelSigns(currentItem)) {
+        let relation = processRelation(currentItem, stack)
+        poliz.shift()               // rel sign
+        let tagUPH = poliz.shift()  // m_x
 
-      // if
-
-      // for
-
+        if (!relation)              // follow UPH
+          poliz = processTagOperation(tagUPH, poliz, polizCopy)
+      }
+      // uncond operation
+      else if (currentItem === 'BP') {
+        poliz = processTagOperation(stack.pop(), poliz, polizCopy)
+      }
       else {
-        if (itemAmongVariables(currentItem, vars))
-          currentItem = checkGetVarValue(currentItem, vars)
+        if (itemAmongArray(currentItem, vars))
+          currentItem = checkGetValue(currentItem, vars)
+        if (itemAmongArray(currentItem, loopTags))
+          currentItem = checkGetValue(currentItem, loopTags)
         // (/^\d+$/.test(currentItem))
         if (!isNaN(currentItem))
           currentItem = Number.parseInt(currentItem)
@@ -69,7 +86,7 @@ function run(poliz) {
 
     poliz.shift()
   }
-  
+
   console.log('vars')
   console.log(vars)
 }
@@ -90,7 +107,7 @@ function processInput(poliz, vars) {
   let item = poliz[0]
 
   while (item !== 'iEND') {
-    if (itemAmongVariables(item, vars)) {
+    if (itemAmongArray(item, vars)) {
       let v = getVariable(item, vars)
       v.value = prompt('Enter value', '<value>')
       if (v.value !== undefined)
@@ -109,25 +126,23 @@ function processInput(poliz, vars) {
 function processOutput(poliz, vars) {
   poliz.shift()
   let item = poliz[0]
+  let output = []
 
   while (item !== 'oEND') {
-    if (itemAmongVariables(item, vars)) {
+    if (itemAmongArray(item, vars)) {
       let v = getVariable(item, vars)
-      log(v.value !== undefined ? v.value : (v.title + ': undefined'))
-      // console.log(`${v.title}: ${v.value}`)
+      output.push(v.value !== undefined ? v.value : (v.title + ': undefined'))
     } else {
-      log(item)
+      output.push(item)
     }
-    
     poliz.shift()
     item = poliz[0]
   }
+
+  log(output.join(' '))
 }
 
-// TODO: add variable support
-function processArithmOperation(sign, vars, stack) {
-  console.log(' ---- stack')
-  console.log(stack)
+function processArithmOperation(sign, stack) {
   let ns = stack.length
 
   if (sign === '+')
@@ -142,11 +157,70 @@ function processArithmOperation(sign, vars, stack) {
     stack[ns - 1] = - stack[ns - 1]
 }
 
-// TODO: add variable support
-function processAssignment(vars, stack) {
+function processAssignment(vars, stack, loopTags) {
   let value = stack.pop()
-  let index = getVariableIndex(stack.pop(), vars)
-  vars[index].value = value
+  let assignee = stack.pop()
+  console.log(`|| PROCESSING ASSIGNMENT (v: ${value} | ass: ${assignee})`)
+
+  let index = getVariableIndex(assignee, vars)
+  if (index === -1) {
+    // processing usual values
+    if (!isNaN(assignee)) {
+      index = vars.findIndex(el => el.value === assignee)
+      vars[index].value = value
+    }
+    // processing r_x
+    else {
+      console.log('] loop tags:')
+      let i = loopTags.findIndex(el => el.title === assignee)
+      console.log(`] tag1: v ${loopTags[0].value} | t ${loopTags[0].title}`)
+      console.log(`] tag1: v ${loopTags[1].value} | t ${loopTags[1].title}`)
+      console.log(`] index: ${i}`)
+      if (i !== -1)
+        loopTags[i].value = value
+    }
+  } else {
+    vars[index].value = value
+  }
+}
+
+function processAss(array, stack) {
+  let value = stack.pop()
+  let assignee = stack.pop()
+  console.log(`|| v2 PROCESSING ASSIGNMENT (v: ${value} | ass: ${assignee})`)
+
+  let index = array.findIndex(v => v.title === assignee)
+  if (index === -1) {
+    if (!isNaN(assignee)) {
+      index = array.findIndex(el => el.value === assignee)
+    }
+  }
+  array[index].value = value
+}
+
+function processRelation(sign, stack) {
+  let right = stack.pop()
+  let left = stack.pop()
+  console.log(`Relating: ${left} vs ${right}`)
+  console.log([left])
+  console.log([right])
+
+  if (sign === '>')       return left > right
+  else if (sign === '>=') return left >= right
+  else if (sign === '<')  return left < right
+  else if (sign === '<=') return left <= right
+  else if (sign === '==') return left == right
+  else                    return left != right
+}
+
+function processTagOperation(tag, poliz, polizCopy) {
+  console.log(` ||| IN PROCESS TAG (${tag})`)
+  // need to search through the full poliz ?
+
+  // let index = poliz.findIndex(el => el === `${tag}:`)
+  // poliz.splice(0, index)
+  let index = polizCopy.findIndex(el => el === `${tag}:`)
+  return poliz = [...polizCopy.slice(index)]
 }
 
 
@@ -155,8 +229,8 @@ function isVariableType(item) {
   return item === 'int' || item === 'fixed' || item === 'label'
 }
 
-function itemAmongVariables(item, vars) {
-  for (let v of vars) {
+function itemAmongArray(item, array) {
+  for (let v of array) {
     if (v.title === item) return true
   }
   return false
@@ -167,12 +241,20 @@ function itemAmongArithmSigns(sign) {
     if (s === sign) return true
   return false
 }
+function itemAmongRelSigns(sign) {
+  let signs = ['>', '>=', '<', '<=', '==', '!=']
+  for (let s of signs)
+    if (s === sign) return true
+  return false
+}
 
 // push only values to stack (instead of variables)
-function checkGetVarValue(value, vars) {
-  for (let v of vars)
+function checkGetValue(value, array) {
+  // check for array of variables
+  for (let v of array)
     if (v.title === value)
       return (v.value === undefined) ? v.title : v.value
+  // constants
   return value
 }
 

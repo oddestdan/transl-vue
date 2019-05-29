@@ -9,7 +9,7 @@
         <textarea rows="13" v-model="temporaryProgram"></textarea>
         <hr>
         <h2>Poliz</h2>
-        <textarea rows="13" v-model="poliz.join(' ')"></textarea>
+        <textarea rows="6" v-model="poliz.join(' ')"></textarea>
       </div>
     </div>
 
@@ -96,15 +96,15 @@ let testingProgram = `int i, j
 fixed fCon
 label LB
 {
-  i = - 5 + 9 * (- 7 + 8)
-  // for i = 0 by 1 while i <= 9 do oput >> i
-  // if j > 10 then goto LB
-  oput >> i
+  j = 4
+  i = - j + 9 * (- 7 + 8)
+  for k = 0 by 1 while k <= 4 do oput >> k
+  if i > 6 then goto LB
   iput << j
-  // goto LB
-  // oput >> fCon >> 3.1E-1
-  oput >> j >> 3.1E-1
+  goto LB
+  oput >> 42
   @LB
+  oput >> j >> 3.1E-1
 }`
 
 export default {
@@ -118,21 +118,26 @@ export default {
 
       temporaryProgram: testingProgram,
       poliz: [
-        "i", "j", "int", "fCon", "fixed", "LB", "label",
+        "i", "j", "k", "int", "fCon", "fixed", "LB", "label",
         "EoDecl",
         "j", "4", "=",
         "i", "j", "@", "9", "7", "@", "8", "+", "*", "+", "=",
 
-        // "i", "0", "=", "r_0", "1", "=", "m_0", ":", "r_1", "1", "=", "r_0", "0",
-          // "=", "m_1", "UPH", "i", "i", "r_1", "+", "=", "m_1", ":", "r_0", "0", "=",
-          // "i", "9", "<=", "m_2", "UPH", "OPUT", "i", "oEND", "m_0", "BP", "m_2", ":",
-        // "j", "10", ">", "m_3", "UPH", "m_LB", "BP", "m_3", ":", 
+        // "r_1", "1", "=",
 
-        "OPUT", "i", "oEND",
+        // "k", "0", "=", "r_0", "1", "=",
+        //   "m_0:", "r_1", "1", "=", "r_0", "0", "==", "m_1", "UPH",
+        //   "k", "k", "r_1", "+", "=",
+        //   "m_1:", "r_0", "0", "=", "k", "9", "<=", "m_2", "UPH",
+        //   "OPUT", "k", "oEND",
+        //   "m_0", "BP", "m_2:",
+
+        "i", "1", ">", "m_3", "UPH", "m_LB", "BP", "m_3:", 
         "IPUT", "j", "iEND",
-        // "m_LB", "BP",
+        "m_LB", "BP",
+        "OPUT", "42", "oEND",
+        "m_LB:",
         "OPUT", "j", "3.1E-1", "oEND",
-        // "m_LB", ":",
         "EoOper"
       ],
       
