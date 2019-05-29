@@ -19,7 +19,7 @@ function run(poliz) {
   let currentItem = ''
 
 
-  // Declaration
+  // Declaration block
   while (currentItem !== 'EoDecl') {
     currentItem = poliz.shift()
     if (isVariableType(currentItem)) {  // Encountered variable type
@@ -30,20 +30,14 @@ function run(poliz) {
   }
   stack.pop() // remove 'EoDecl'
 
-  console.log('vars')
-  console.log(vars)
-
-  // Operation
-  // while (currentItem !== 'EoOper') {
-  for (let i = 0; i < 80; i++) {
+  // Operation block
+  while (currentItem !== 'EoOper') {
     currentItem = poliz[0]
 
-    console.log('main stack: ')
-    console.log(stack)
-    console.log('main poliz: ')
-    console.log(poliz)
-    // console.log(`main tag1: v ${loopTags[0].value} | t ${loopTags[0].title}`)
-    // console.log(`main tag1: v ${loopTags[1].value} | t ${loopTags[1].title}`)
+    // console.log('main stack: ')
+    // console.log(stack)
+    // console.log('main poliz: ')
+    // console.log(poliz)
     
     if (currentItem === 'IPUT') {         // Processing input
       processInput(poliz, vars)
@@ -56,8 +50,7 @@ function run(poliz) {
       } 
       // assignment
       else if (currentItem === '=') {
-        processAss(vars, stack)
-        // processAssignment(vars, stack, loopTags)
+        processAssignment(vars, loopTags, stack)
       }
       // relation
       else if (itemAmongRelSigns(currentItem)) {
@@ -108,7 +101,7 @@ function processInput(poliz, vars) {
 
   while (item !== 'iEND') {
     if (itemAmongArray(item, vars)) {
-      let v = getVariable(item, vars)
+      let v = vars.find(v => v.title === item)
       v.value = prompt('Enter value', '<value>')
       if (v.value !== undefined)
         log(`Successful input! ${v.title}: ${v.value}`)
@@ -130,7 +123,7 @@ function processOutput(poliz, vars) {
 
   while (item !== 'oEND') {
     if (itemAmongArray(item, vars)) {
-      let v = getVariable(item, vars)
+      let v = vars.find(v => v.title === item)
       output.push(v.value !== undefined ? v.value : (v.title + ': undefined'))
     } else {
       output.push(item)
@@ -157,53 +150,48 @@ function processArithmOperation(sign, stack) {
     stack[ns - 1] = - stack[ns - 1]
 }
 
-function processAssignment(vars, stack, loopTags) {
+function processAssignment(vars, tags, stack) {
   let value = stack.pop()
   let assignee = stack.pop()
-  console.log(`|| PROCESSING ASSIGNMENT (v: ${value} | ass: ${assignee})`)
 
-  let index = getVariableIndex(assignee, vars)
-  if (index === -1) {
-    // processing usual values
-    if (!isNaN(assignee)) {
-      index = vars.findIndex(el => el.value === assignee)
-      vars[index].value = value
-    }
-    // processing r_x
-    else {
-      console.log('] loop tags:')
-      let i = loopTags.findIndex(el => el.title === assignee)
-      console.log(`] tag1: v ${loopTags[0].value} | t ${loopTags[0].title}`)
-      console.log(`] tag1: v ${loopTags[1].value} | t ${loopTags[1].title}`)
-      console.log(`] index: ${i}`)
-      if (i !== -1)
-        loopTags[i].value = value
-    }
+  // console.log(`|| v2 PROCESSING ASSIGNMENT (v: ${value} | ass: ${assignee})`)
+
+  // process for variables
+  let indexVar = vars.findIndex(v => v.title === assignee)
+  let indexTag = tags.findIndex(v => v.title === assignee)
+
+  if (indexVar !== -1) {        // among vars title
+    vars[indexVar].value = value
   } else {
-    vars[index].value = value
-  }
-}
-
-function processAss(array, stack) {
-  let value = stack.pop()
-  let assignee = stack.pop()
-  console.log(`|| v2 PROCESSING ASSIGNMENT (v: ${value} | ass: ${assignee})`)
-
-  let index = array.findIndex(v => v.title === assignee)
-  if (index === -1) {
-    if (!isNaN(assignee)) {
-      index = array.findIndex(el => el.value === assignee)
+    indexVar = vars.findIndex(el => el.value === assignee)
+    if (indexVar !== -1) {      // among vars values
+      vars[indexVar].value = value
+    } else {
+      if (indexTag !== -1) {    // among tags titles
+        tags[indexTag].value = value
+      } else {
+        indexTag = tags.findIndex(el => el.value === assignee)
+        if (indexTag !== -1) {  // among tags values
+          tags[indexTag].value = value
+        } else {
+          // default case (never is) !!!
+          console.log('---------------------------')
+          console.log('<< DEFAULT CASE INCOMING >>')
+          console.log('---------------------------')
+          stack.push(value)
+        }
+      }
     }
   }
-  array[index].value = value
 }
 
 function processRelation(sign, stack) {
   let right = stack.pop()
   let left = stack.pop()
-  console.log(`Relating: ${left} vs ${right}`)
-  console.log([left])
-  console.log([right])
+  
+  // console.log(` !!! PROCESSING RELATION: ${left} vs ${right}`)
+  // console.log([left])
+  // console.log([right])
 
   if (sign === '>')       return left > right
   else if (sign === '>=') return left >= right
@@ -214,8 +202,7 @@ function processRelation(sign, stack) {
 }
 
 function processTagOperation(tag, poliz, polizCopy) {
-  console.log(` ||| IN PROCESS TAG (${tag})`)
-  // need to search through the full poliz ?
+  // console.log(` ||| IN PROCESS TAG (${tag})`)
 
   // let index = poliz.findIndex(el => el === `${tag}:`)
   // poliz.splice(0, index)
@@ -250,19 +237,15 @@ function itemAmongRelSigns(sign) {
 
 // push only values to stack (instead of variables)
 function checkGetValue(value, array) {
+  // console.log(` |||| IN CHECK GET VALUE (${value}) (${typeof value})`)
+  // console.log(array)
+
   // check for array of variables
   for (let v of array)
     if (v.title === value)
       return (v.value === undefined) ? v.title : v.value
   // constants
   return value
-}
-
-function getVariable(title, vars) {
-  return vars.find(v => v.title === title)
-}
-function getVariableIndex(title, vars) {
-  return vars.findIndex(v => v.title === title)
 }
 
 function log(string) {
