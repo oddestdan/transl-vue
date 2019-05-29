@@ -254,7 +254,7 @@ let dijkstra = function(stack, input, poliz, outputTable) {
       // input / output
       else if (input[0].title === 'iput' || input[0].title === 'oput') {
         console.log('Processing start of iput/oput')
-        poliz.push(input[0].title)
+        poliz.push(input[0].title.toUpperCase())
         stack.push(input.shift())
       }
       else {

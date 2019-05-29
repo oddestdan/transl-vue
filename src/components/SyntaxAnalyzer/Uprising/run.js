@@ -1,14 +1,12 @@
 /* eslint-disable */
 export default function runProgram(lexemsJSON, poliz) {
   let lexems = JSON.parse(lexemsJSON)
-  console.log('RUNNING PROGRAM')
-
-  // return run(poliz)
   run(poliz)
 }
 
 function run(poliz) {
   alert('running the program!\n' + poliz.join(' | '))
+  console.log('RUNNING PROGRAM')
 
   const polizCopy = [...poliz]
 
@@ -65,6 +63,7 @@ function run(poliz) {
       else if (currentItem === 'BP') {
         poliz = processTagOperation(stack.pop(), poliz, polizCopy)
       }
+      // push value to stack
       else {
         if (itemAmongArray(currentItem, vars))
           currentItem = checkGetValue(currentItem, vars)
@@ -79,9 +78,7 @@ function run(poliz) {
 
     poliz.shift()
   }
-
-  console.log('vars')
-  console.log(vars)
+  console.log('END OF PROGRAM')
 }
 
 

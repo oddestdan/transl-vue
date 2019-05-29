@@ -5,22 +5,12 @@
 
     <div class="centerColContainer">
       <div class="textContainer">
-        <h2>Program</h2>
-        <textarea rows="13" v-model="temporaryProgram"></textarea>
-        <hr>
-        <h2>Poliz</h2>
-        <textarea rows="6" v-model="poliz.join(' ')"></textarea>
-      </div>
-    </div>
-
-    <div class="centerColContainer">
-      <div class="textContainer">
         <h2>Program Loader</h2>
         <hr>
 
         <text-reader @load="programInput = $event"></text-reader>
         <br>
-        <textarea rows="13" v-model="programInput"></textarea>
+        <textarea rows="15" v-model="programInput"></textarea>
       </div>
     </div>
 
@@ -77,10 +67,6 @@
 
 <script>
 import TextReader from '@/components/TextReader.vue'
-// import {
-  // lexParser,
-  // lexemTableJSON
-// } from '@/components/LexemAnalyzer/LexemAnalyzer.js'
 import lexParser from '@/components/LexemAnalyzer/LexemAnalyzer.js'
 import { parserRecursive } from '@/components/SyntaxAnalyzer/Recursive/SARecursive.js'
 import { parserMPA } from '@/components/SyntaxAnalyzer/MPA/SAMPA.js'
@@ -92,21 +78,6 @@ import parserArithmPoliz from '@/components/SyntaxAnalyzer/Uprising/SAPolizArith
 import parserPoliz from '@/components/SyntaxAnalyzer/Uprising/SAPoliz.js'
 import run from '@/components/SyntaxAnalyzer/Uprising/run.js'
 
-let testingProgram = `int i, j
-fixed fCon
-label LB
-{
-  j = 4
-  i = - j + 9 * (- 7 + 8)
-  for k = 0 by 1 while k <= 4 do oput >> k
-  if i > 6 then goto LB
-  iput << j
-  goto LB
-  oput >> 42
-  @LB
-  oput >> j >> 3.1E-1
-}`
-
 export default {
   data() {
     return {
@@ -115,29 +86,7 @@ export default {
       relationTable: [],
       rules: [],
       polizTable: [],
-
-      temporaryProgram: testingProgram,
-      poliz: [
-        "i", "j", "k", "int", "fCon", "fixed", "LB", "label",
-        "EoDecl",
-        "j", "4", "=",
-        "i", "j", "@", "9", "7", "@", "8", "+", "*", "+", "=",
-
-        "k", "0", "=", "r_0", "1", "=",
-          "m_0:", "r_1", "1", "=", "r_0", "0", "==", "m_1", "UPH",
-          "k", "k", "r_1", "+", "=",
-          "m_1:", "r_0", "0", "=", "k", "8", "<=", "m_2", "UPH",
-          "OPUT", "k", "oEND",
-          "m_0", "BP", "m_2:",
-
-        "i", "1", ">", "m_3", "UPH", "m_LB", "BP", "m_3:", 
-        "IPUT", "j", "iEND",
-        "m_LB", "BP",
-        "OPUT", "42", "oEND",
-        "m_LB:",
-        "OPUT", "j", "3.1E-1", "oEND",
-        "EoOper"
-      ],
+      poliz: [],
       
       selectedParser: 'Poliz'
     }
@@ -256,9 +205,7 @@ export default {
     },
 
     runProgram() {
-      this.lexems = lexParser(this.programInput)
-      
-      // should return a function that does all the work here?
+      console.clear()
       run(this.lexems, this.poliz)
     }
   },
@@ -271,14 +218,14 @@ export default {
 
 <style scoped>
 /* temporary styles */
-.home div:nth-child(3),
+/* .home div:nth-child(3),
 .home div:nth-child(4),
 .home div:nth-child(5),
 .home div:nth-child(6),
 .home div:nth-child(7),
 .home div:nth-child(8) {
   display: none;
-}
+} */
 
 .splitter {
   display: flex;
@@ -338,11 +285,4 @@ button:active {
   height: 100%;
   padding: 15px 10px;
 }
-/* LAB 4 stuff */
-/* .tableItem:hover {
-  background-color: rgba(0, 0, 0, 0.25);
-}
-.buttonContainer {
-  display: none;
-} */
 </style>

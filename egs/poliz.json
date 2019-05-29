@@ -39,6 +39,25 @@
   },
   {
     "number": 5,
+    "title": ",",
+    "row": 1,
+    "code": 14,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 6,
+    "title": "k",
+    "row": 1,
+    "code": 100,
+    "idCode": 3,
+    "idType": "int",
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 7,
     "title": "\n",
     "row": 2,
     "code": 30,
@@ -47,7 +66,7 @@
     "labelCode": null
   },
   {
-    "number": 6,
+    "number": 8,
     "title": "fixed",
     "row": 2,
     "code": 2,
@@ -56,17 +75,17 @@
     "labelCode": null
   },
   {
-    "number": 7,
+    "number": 9,
     "title": "fCon",
     "row": 2,
     "code": 100,
-    "idCode": 3,
+    "idCode": 4,
     "idType": "fixed",
     "constCode": null,
     "labelCode": null
   },
   {
-    "number": 8,
+    "number": 10,
     "title": "\n",
     "row": 3,
     "code": 30,
@@ -75,7 +94,7 @@
     "labelCode": null
   },
   {
-    "number": 9,
+    "number": 11,
     "title": "label",
     "row": 3,
     "code": 32,
@@ -84,7 +103,7 @@
     "labelCode": null
   },
   {
-    "number": 10,
+    "number": 12,
     "title": "LB",
     "row": 3,
     "code": 102,
@@ -93,7 +112,7 @@
     "labelCode": 1
   },
   {
-    "number": 11,
+    "number": 13,
     "title": "\n",
     "row": 4,
     "code": 30,
@@ -102,7 +121,7 @@
     "labelCode": null
   },
   {
-    "number": 12,
+    "number": 14,
     "title": "{",
     "row": 4,
     "code": 12,
@@ -111,7 +130,7 @@
     "labelCode": null
   },
   {
-    "number": 13,
+    "number": 15,
     "title": "\n",
     "row": 5,
     "code": 30,
@@ -120,16 +139,16 @@
     "labelCode": null
   },
   {
-    "number": 14,
-    "title": "i",
+    "number": 16,
+    "title": "j",
     "row": 5,
     "code": 100,
-    "idCode": 1,
+    "idCode": 2,
     "constCode": null,
     "labelCode": null
   },
   {
-    "number": 15,
+    "number": 17,
     "title": "=",
     "row": 5,
     "code": 15,
@@ -138,17 +157,8 @@
     "labelCode": null
   },
   {
-    "number": 16,
-    "title": "-",
-    "row": 5,
-    "code": 25,
-    "idCode": null,
-    "constCode": null,
-    "labelCode": null
-  },
-  {
-    "number": 17,
-    "title": "5",
+    "number": 18,
+    "title": "4",
     "row": 5,
     "code": 101,
     "idCode": null,
@@ -156,88 +166,7 @@
     "labelCode": null
   },
   {
-    "number": 18,
-    "title": "+",
-    "row": 5,
-    "code": 24,
-    "idCode": null,
-    "constCode": null,
-    "labelCode": null
-  },
-  {
     "number": 19,
-    "title": "4",
-    "row": 5,
-    "code": 101,
-    "idCode": null,
-    "constCode": 2,
-    "labelCode": null
-  },
-  {
-    "number": 20,
-    "title": "*",
-    "row": 5,
-    "code": 26,
-    "idCode": null,
-    "constCode": null,
-    "labelCode": null
-  },
-  {
-    "number": 21,
-    "title": "(",
-    "row": 5,
-    "code": 28,
-    "idCode": null,
-    "constCode": null,
-    "labelCode": null
-  },
-  {
-    "number": 22,
-    "title": "-",
-    "row": 5,
-    "code": 25,
-    "idCode": null,
-    "constCode": null,
-    "labelCode": null
-  },
-  {
-    "number": 23,
-    "title": "9",
-    "row": 5,
-    "code": 101,
-    "idCode": null,
-    "constCode": 3,
-    "labelCode": null
-  },
-  {
-    "number": 24,
-    "title": "+",
-    "row": 5,
-    "code": 24,
-    "idCode": null,
-    "constCode": null,
-    "labelCode": null
-  },
-  {
-    "number": 25,
-    "title": "8",
-    "row": 5,
-    "code": 101,
-    "idCode": null,
-    "constCode": 4,
-    "labelCode": null
-  },
-  {
-    "number": 26,
-    "title": ")",
-    "row": 5,
-    "code": 29,
-    "idCode": null,
-    "constCode": null,
-    "labelCode": null
-  },
-  {
-    "number": 27,
     "title": "\n",
     "row": 6,
     "code": 30,
@@ -246,16 +175,7 @@
     "labelCode": null
   },
   {
-    "number": 28,
-    "title": "for",
-    "row": 6,
-    "code": 3,
-    "idCode": null,
-    "constCode": null,
-    "labelCode": null
-  },
-  {
-    "number": 29,
+    "number": 20,
     "title": "i",
     "row": 6,
     "code": 100,
@@ -264,7 +184,7 @@
     "labelCode": null
   },
   {
-    "number": 30,
+    "number": 21,
     "title": "=",
     "row": 6,
     "code": 15,
@@ -273,62 +193,71 @@
     "labelCode": null
   },
   {
-    "number": 31,
-    "title": "0",
+    "number": 22,
+    "title": "-",
     "row": 6,
-    "code": 101,
-    "idCode": null,
-    "constCode": 5,
-    "labelCode": null
-  },
-  {
-    "number": 32,
-    "title": "by",
-    "row": 6,
-    "code": 4,
+    "code": 25,
     "idCode": null,
     "constCode": null,
     "labelCode": null
   },
   {
-    "number": 33,
-    "title": "1",
-    "row": 6,
-    "code": 101,
-    "idCode": null,
-    "constCode": 6,
-    "labelCode": null
-  },
-  {
-    "number": 34,
-    "title": "while",
-    "row": 6,
-    "code": 5,
-    "idCode": null,
-    "constCode": null,
-    "labelCode": null
-  },
-  {
-    "number": 35,
-    "title": "i",
+    "number": 23,
+    "title": "j",
     "row": 6,
     "code": 100,
-    "idCode": 1,
+    "idCode": 2,
     "constCode": null,
     "labelCode": null
   },
   {
-    "number": 36,
-    "title": "<=",
+    "number": 24,
+    "title": "+",
     "row": 6,
-    "code": 20,
+    "code": 24,
     "idCode": null,
     "constCode": null,
     "labelCode": null
   },
   {
-    "number": 37,
+    "number": 25,
     "title": "9",
+    "row": 6,
+    "code": 101,
+    "idCode": null,
+    "constCode": 2,
+    "labelCode": null
+  },
+  {
+    "number": 26,
+    "title": "*",
+    "row": 6,
+    "code": 26,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 27,
+    "title": "(",
+    "row": 6,
+    "code": 28,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 28,
+    "title": "-",
+    "row": 6,
+    "code": 25,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 29,
+    "title": "7",
     "row": 6,
     "code": 101,
     "idCode": null,
@@ -336,229 +265,301 @@
     "labelCode": null
   },
   {
-    "number": 38,
-    "title": "do",
+    "number": 30,
+    "title": "+",
     "row": 6,
-    "code": 6,
+    "code": 24,
     "idCode": null,
     "constCode": null,
     "labelCode": null
   },
   {
-    "number": 39,
-    "title": "oput",
+    "number": 31,
+    "title": "8",
     "row": 6,
-    "code": 10,
-    "idCode": null,
-    "constCode": null,
-    "labelCode": null
-  },
-  {
-    "number": 40,
-    "title": ">>",
-    "row": 6,
-    "code": 17,
-    "idCode": null,
-    "constCode": null,
-    "labelCode": null
-  },
-  {
-    "number": 41,
-    "title": "i",
-    "row": 6,
-    "code": 100,
-    "idCode": 1,
-    "constCode": null,
-    "labelCode": null
-  },
-  {
-    "number": 42,
-    "title": "\n",
-    "row": 7,
-    "code": 30,
-    "idCode": null,
-    "constCode": null,
-    "labelCode": null
-  },
-  {
-    "number": 43,
-    "title": "if",
-    "row": 7,
-    "code": 7,
-    "idCode": null,
-    "constCode": null,
-    "labelCode": null
-  },
-  {
-    "number": 44,
-    "title": "j",
-    "row": 7,
-    "code": 100,
-    "idCode": 2,
-    "constCode": null,
-    "labelCode": null
-  },
-  {
-    "number": 45,
-    "title": ">",
-    "row": 7,
-    "code": 19,
-    "idCode": null,
-    "constCode": null,
-    "labelCode": null
-  },
-  {
-    "number": 46,
-    "title": "10",
-    "row": 7,
     "code": 101,
     "idCode": null,
-    "constCode": 7,
+    "constCode": 4,
     "labelCode": null
   },
   {
-    "number": 47,
-    "title": "then",
-    "row": 7,
-    "code": 8,
+    "number": 32,
+    "title": ")",
+    "row": 6,
+    "code": 29,
     "idCode": null,
     "constCode": null,
     "labelCode": null
   },
   {
-    "number": 48,
-    "title": "goto",
-    "row": 7,
-    "code": 9,
-    "idCode": null,
-    "constCode": null,
-    "labelCode": null
-  },
-  {
-    "number": 49,
-    "title": "LB",
-    "row": 7,
-    "code": 102,
-    "idCode": null,
-    "constCode": null,
-    "labelCode": 1
-  },
-  {
-    "number": 50,
+    "number": 33,
     "title": "\n",
-    "row": 8,
+    "row": 7,
     "code": 30,
     "idCode": null,
     "constCode": null,
     "labelCode": null
   },
   {
-    "number": 51,
-    "title": "iput",
-    "row": 8,
-    "code": 11,
+    "number": 34,
+    "title": "for",
+    "row": 7,
+    "code": 3,
     "idCode": null,
     "constCode": null,
     "labelCode": null
   },
   {
-    "number": 52,
-    "title": "<<",
-    "row": 8,
-    "code": 16,
-    "idCode": null,
-    "constCode": null,
-    "labelCode": null
-  },
-  {
-    "number": 53,
-    "title": "i",
-    "row": 8,
-    "code": 100,
-    "idCode": 1,
-    "constCode": null,
-    "labelCode": null
-  },
-  {
-    "number": 54,
-    "title": "\n",
-    "row": 9,
-    "code": 30,
-    "idCode": null,
-    "constCode": null,
-    "labelCode": null
-  },
-  {
-    "number": 55,
-    "title": "goto",
-    "row": 9,
-    "code": 9,
-    "idCode": null,
-    "constCode": null,
-    "labelCode": null
-  },
-  {
-    "number": 56,
-    "title": "LB",
-    "row": 9,
-    "code": 102,
-    "idCode": null,
-    "constCode": null,
-    "labelCode": 1
-  },
-  {
-    "number": 57,
-    "title": "\n",
-    "row": 10,
-    "code": 30,
-    "idCode": null,
-    "constCode": null,
-    "labelCode": null
-  },
-  {
-    "number": 58,
-    "title": "oput",
-    "row": 10,
-    "code": 10,
-    "idCode": null,
-    "constCode": null,
-    "labelCode": null
-  },
-  {
-    "number": 59,
-    "title": ">>",
-    "row": 10,
-    "code": 17,
-    "idCode": null,
-    "constCode": null,
-    "labelCode": null
-  },
-  {
-    "number": 60,
-    "title": "fCon",
-    "row": 10,
+    "number": 35,
+    "title": "k",
+    "row": 7,
     "code": 100,
     "idCode": 3,
     "constCode": null,
     "labelCode": null
   },
   {
-    "number": 61,
+    "number": 36,
+    "title": "=",
+    "row": 7,
+    "code": 15,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 37,
+    "title": "0",
+    "row": 7,
+    "code": 101,
+    "idCode": null,
+    "constCode": 5,
+    "labelCode": null
+  },
+  {
+    "number": 38,
+    "title": "by",
+    "row": 7,
+    "code": 4,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 39,
+    "title": "1",
+    "row": 7,
+    "code": 101,
+    "idCode": null,
+    "constCode": 6,
+    "labelCode": null
+  },
+  {
+    "number": 40,
+    "title": "while",
+    "row": 7,
+    "code": 5,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 41,
+    "title": "k",
+    "row": 7,
+    "code": 100,
+    "idCode": 3,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 42,
+    "title": "<=",
+    "row": 7,
+    "code": 20,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 43,
+    "title": "8",
+    "row": 7,
+    "code": 101,
+    "idCode": null,
+    "constCode": 4,
+    "labelCode": null
+  },
+  {
+    "number": 44,
+    "title": "do",
+    "row": 7,
+    "code": 6,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 45,
+    "title": "oput",
+    "row": 7,
+    "code": 10,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 46,
     "title": ">>",
-    "row": 10,
+    "row": 7,
     "code": 17,
     "idCode": null,
     "constCode": null,
     "labelCode": null
   },
   {
-    "number": 62,
-    "title": "3.1E-1",
-    "row": 10,
+    "number": 47,
+    "title": "k",
+    "row": 7,
+    "code": 100,
+    "idCode": 3,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 48,
+    "title": "\n",
+    "row": 8,
+    "code": 30,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 49,
+    "title": "if",
+    "row": 8,
+    "code": 7,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 50,
+    "title": "j",
+    "row": 8,
+    "code": 100,
+    "idCode": 2,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 51,
+    "title": ">",
+    "row": 8,
+    "code": 19,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 52,
+    "title": "10",
+    "row": 8,
     "code": 101,
     "idCode": null,
-    "constCode": 8,
+    "constCode": 7,
     "labelCode": null
+  },
+  {
+    "number": 53,
+    "title": "then",
+    "row": 8,
+    "code": 8,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 54,
+    "title": "goto",
+    "row": 8,
+    "code": 9,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 55,
+    "title": "LB",
+    "row": 8,
+    "code": 102,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": 1
+  },
+  {
+    "number": 56,
+    "title": "\n",
+    "row": 9,
+    "code": 30,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 57,
+    "title": "iput",
+    "row": 9,
+    "code": 11,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 58,
+    "title": "<<",
+    "row": 9,
+    "code": 16,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 59,
+    "title": "j",
+    "row": 9,
+    "code": 100,
+    "idCode": 2,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 60,
+    "title": "\n",
+    "row": 10,
+    "code": 30,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 61,
+    "title": "goto",
+    "row": 10,
+    "code": 9,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 62,
+    "title": "LB",
+    "row": 10,
+    "code": 102,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": 1
   },
   {
     "number": 63,
@@ -571,24 +572,33 @@
   },
   {
     "number": 64,
-    "title": "@",
+    "title": "oput",
     "row": 11,
-    "code": 33,
+    "code": 10,
     "idCode": null,
     "constCode": null,
     "labelCode": null
   },
   {
     "number": 65,
-    "title": "LB",
+    "title": ">>",
     "row": 11,
-    "code": 102,
+    "code": 17,
     "idCode": null,
     "constCode": null,
-    "labelCode": 1
+    "labelCode": null
   },
   {
     "number": 66,
+    "title": "42",
+    "row": 11,
+    "code": 101,
+    "idCode": null,
+    "constCode": 8,
+    "labelCode": null
+  },
+  {
+    "number": 67,
     "title": "\n",
     "row": 12,
     "code": 30,
@@ -597,18 +607,99 @@
     "labelCode": null
   },
   {
-    "number": 67,
-    "title": "}",
+    "number": 68,
+    "title": "@",
     "row": 12,
+    "code": 33,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 69,
+    "title": "LB",
+    "row": 12,
+    "code": 102,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": 1
+  },
+  {
+    "number": 70,
+    "title": "\n",
+    "row": 13,
+    "code": 30,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 71,
+    "title": "oput",
+    "row": 13,
+    "code": 10,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 72,
+    "title": ">>",
+    "row": 13,
+    "code": 17,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 73,
+    "title": "j",
+    "row": 13,
+    "code": 100,
+    "idCode": 2,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 74,
+    "title": ">>",
+    "row": 13,
+    "code": 17,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 75,
+    "title": "3.1E-1",
+    "row": 13,
+    "code": 101,
+    "idCode": null,
+    "constCode": 9,
+    "labelCode": null
+  },
+  {
+    "number": 76,
+    "title": "\n",
+    "row": 14,
+    "code": 30,
+    "idCode": null,
+    "constCode": null,
+    "labelCode": null
+  },
+  {
+    "number": 77,
+    "title": "}",
+    "row": 14,
     "code": 13,
     "idCode": null,
     "constCode": null,
     "labelCode": null
   },
   {
-    "number": 68,
+    "number": 78,
     "title": "\n",
-    "row": 13,
+    "row": 15,
     "code": 30,
     "idCode": null,
     "constCode": null,
